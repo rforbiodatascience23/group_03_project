@@ -32,16 +32,28 @@ library("illuminaHumanv4.db")
 RNA-seq gene expression counts were available as a txt file. The file is loaded into R using the package GEOquery:
 
 ```{r}
-# Set the working directory to were your data folder is placed.
+# Set up
+raw_dir <- "data/_raw/"
+data_file <- "GSE50834_non-normalized.txt.gz"
 geo <- "GSE50834"
 
-# Download gene expression data
-data_file <- getGEOSuppFiles(GEO = geo,
-                             makeDirectory = FALSE,
-                             fetch_files = TRUE,
-                             filter_regex = "txt")
+# Create data folder if not already existing
+if( !dir.exists(raw_dir) ){
+  dir.create(path = raw_dir,
+             recursive = TRUE)
+}
 
-count_data <- read.table(file = "GSE50834_non-normalized.txt.gz",
+# Get the data file if it is not already downloaded
+if( !file.exists(str_c(raw_dir, data_file)) ){
+  getGEOSuppFiles(GEO = geo,
+                  makeDirectory = FALSE,
+                  baseDir = raw_dir,
+                  fetch_files = TRUE,
+                  filter_regex = "txt")
+}
+
+# Load the data into R
+count_data <- read.table(file = str_c(raw_dir, data_file),
                          sep = "\t",
                          header = TRUE)
 ```
