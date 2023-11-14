@@ -68,10 +68,10 @@ meta_data <- meta_data |>
                characteristics_ch1,
                characteristics_ch1.2,
                description.1) |> 
-  rename(title = "patient_n",
-         characteristics_ch1 = "gender",
-         characteristics_ch1.2 = "disease_state",
-         description.1 = "identifier")
+  rename("patient_n" = title,
+         "gender" =  characteristics_ch1,
+         "disease_state" = characteristics_ch1.2,
+         "identifier" = description.1)
 ```
 
 We clean up patient, gender and disease state columns.
@@ -148,11 +148,8 @@ dat_clean <- inner_join(x = count_data,
 ### Handling Duplicates
 
 ```{r}
-dat_clean |>
-  filter(str_detect(patient_n, "_")) |> 
-  dplyr::select(starts_with("ILMN")) |> 
-  rowwise() |> 
-  mutate()
+dat_clean <- dat_clean |>
+  filter(!str_detect(patient_n, "_2")) 
 ```
 
 
