@@ -1,24 +1,26 @@
 ---
-title: "Project Presentation"
-format: revealjs
+title: "Gene expression analysis of M. tuberculosis in patients with and without HIV co-infection"
+format:
+  revealjs: 
+    theme: simple
 editor: visual
+author: "Group 3: Anne Skov-Pedersen, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
 ---
 
-## Quarto
+## Introduction
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+![](../results/test_image.jpg){.absolute top=250 left=0 width="350" height="300"}
 
-## Bullets
+## Methods
 
-When you click the **Render** button a document will be generated that includes:
 
--   Content authored with markdown
--   Output from executable code
 
-## Code
+## Results
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
 
-```{r}
-1 + 1
-```
+
+## Discussion
+
+## Conclusion
+
+
