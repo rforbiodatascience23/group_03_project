@@ -7,6 +7,7 @@ editor: visual
 ## Load libraries
 
 ```{r}
+#| message: false
 library('tidyverse')
 library('broom')
 library('cowplot')
@@ -16,30 +17,8 @@ library('cowplot')
 ## Load data OBS! Dette segment skal erstattes af load af vores eget data
 
 ```{r}
-raw_dir <- "data/_raw/"
-data_file <- "gravier.RData"
-data_loc <- "https://github.com/ramhiser/datamicroarray/raw/master/data/"
-
-if( !dir.exists(raw_dir) ){
-  dir.create(path = raw_dir)
-}
-if( !file.exists(str_c(raw_dir, data_file)) ){
-  download.file(
-    url = str_c(data_loc, data_file),
-    destfile = str_c(raw_dir, data_file))
-}
-load(file = str_c(raw_dir, data_file))
-
-# Rearranges data
-dat <- gravier |>
-  bind_cols() |>
-  as_tibble() |> 
-  mutate(
-    disease_state = case_when(y == "good" ~ "HIV",
-                              y == "poor" ~ "HIV/TB")
-  ) |> 
-  relocate(disease_state) |> 
-select(-y)
+#| message: false
+dat <- read_tsv("../data/02_dat_clean.tsv")
 
 ```
 
@@ -47,8 +26,9 @@ select(-y)
 
 ```{r}
 pca_fit <- dat |> 
-  select(where(is.numeric)) |> # only do pca on numeric columns
-  scale() %>%
+  select(where(is.numeric)) |> # only do PCA on numeric columns
+  log2() |> 
+  scale() |> 
   prcomp()
 
 ```
@@ -84,13 +64,12 @@ ggplot(pca_fit_rotation,
   geom_segment(xend = 0, yend = 0, arrow = arrow()) +
   geom_text(
     mapping = aes(label = column),
-    hjust = 1, nudge_x = -0.001, 
+    hjust = 1, 
     color = "royalblue", size = 2
   ) +
   labs(
     title = "Rotation matrix"
   ) +
-  coord_fixed() + 
   theme_minimal()
 ```
 ### Plot the variance explained

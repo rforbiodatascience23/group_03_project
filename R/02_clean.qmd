@@ -11,11 +11,17 @@ Loading required packages.
 library("tidyverse")
 library("dplyr")
 library("stringr")
+library("readr")
 ```
 
 ## Data Load
 
-Load 01_dat_load.tsv
+```{r}
+#| message: false
+count_data <- read_tsv("../data/01_dat_load_count.tsv")
+meta_data <- read_tsv("../data/01_dat_load_meta.tsv")
+```
+
 
 ## Data Wrangling I
 
@@ -40,7 +46,7 @@ count_data |>
   sample()
 ```
 
-Column names are simplyfied.
+Column names are simplified.
 
 ```{r}
 count_data |> 
@@ -68,10 +74,10 @@ meta_data <- meta_data |>
                characteristics_ch1,
                characteristics_ch1.2,
                description.1) |> 
-  rename(title = "patient_n",
-         characteristics_ch1 = "gender",
-         characteristics_ch1.2 = "disease_state",
-         description.1 = "identifier")
+  rename("patient_n" = title,
+         "gender" =  characteristics_ch1,
+         "disease_state" = characteristics_ch1.2,
+         "identifier" = description.1)
 ```
 
 We clean up patient, gender and disease state columns.
@@ -100,7 +106,6 @@ meta_data |>
   sample()
 ```
 
-
 In the count data, the "-" in the identifier (column names) is a ".". We replace the "-" in the metadata:
 
 ```{r}
@@ -120,11 +125,11 @@ The only difference between identifiers and column names of the count data is th
 
 ## Data Wrangling II
 
-In the following steps, the format of the data will be changed. Furthermore, we wish to join the count data and the meta data. 
+In the following steps, the format of the data will be changed. Furthermore, we wish to join the count data and the meta data.
 
-### Pivot Data 
+### Pivot Data
 
-The count data is pivoted from long to wide. 
+The count data is pivoted from long to wide.
 
 ```{r}
 count_data <- count_data |> pivot_longer(cols = AAA0VKQN.12:EAA0ZNH3.13, 
@@ -148,22 +153,11 @@ dat_clean <- inner_join(x = count_data,
 ### Handling Duplicates
 
 ```{r}
-dat_clean |>
-  filter(str_detect(patient_n, "_")) |> 
-  dplyr::select(starts_with("ILMN")) |> 
-  rowwise() |> 
-  mutate()
+dat_clean <- dat_clean |>
+  filter(!str_detect(patient_n, "_2")) 
 ```
-
 
 ```{r}
 dat_clean |> 
   write_tsv(file = "../data/02_dat_clean.tsv")
 ```
-
-
-
-
-
-
-

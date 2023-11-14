@@ -7,5 +7,29 @@ editor: visual
 ## Load libraries
 
 ```{r}
+#| message: false
 library('tidyverse')
+library('readr')
+```
+
+## Load data
+
+```{r}
+#| message: false
+dat <- read_tsv("../data/02_dat_clean.tsv")
+```
+
+## Describe the data
+
+```{r}
+ggplot(dat,
+       mapping = aes(x = disease_state, fill = gender)) +
+  geom_bar() +
+  theme_minimal() + 
+  labs(
+    x = "Disease state",
+    y = "Cases",
+    fill = "Gender"
+  )
+
 ```
