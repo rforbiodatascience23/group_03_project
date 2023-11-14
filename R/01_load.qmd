@@ -4,23 +4,86 @@ format: html
 editor: visual
 ---
 
-## Quarto
+## Loading data
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+This document will load the data from xxxx. Furthermore, the file will export the data to a tsv-file.
 
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+### Loading required packages
 
 ```{r}
-1 + 1
+#| message: false
+library("tidyverse")
+library("dplyr")
+library("stringr")
+library("GEOquery")
 ```
 
-You can add options to executable code like this
+Note: Instruction of how to install the package GEOquery can be found here *https://bioconductor.org/packages/release/bioc/html/GEOquery.html*
 
+### Load data
+
+In the following, the directory of the data is defined along with the location of the original data.
 ```{r}
-#| echo: false
-2 * 2
+#| label: Set up
+
+raw_dir <- "data/_raw/"
+count_file <- "GSE50834_non-normalized.txt.gz"
+meta_file <- "GSE50834_series_matrix.txt.gz"
+geo <- "GSE50834"
+
+# Create data folder if not already existing
+if( !dir.exists(raw_dir) ){
+  dir.create(path = raw_dir,
+             recursive = TRUE)
+}
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+The count-data, containing patient-ID's and gene counts, is downloaded and stored in raw-data directory.
+```{r}
+#| label: Load count-data
+# Download the count-data, if it is not already exists
+if( !file.exists(str_c(raw_dir, count_file)) ){
+  getGEOSuppFiles(GEO = geo,
+                  makeDirectory = FALSE,
+                  baseDir = raw_dir,
+                  fetch_files = TRUE,
+                  filter_regex = "txt")
+}
+
+# Load the count-data into R
+count_data <- read.table(file = str_c(raw_dir, count_file),
+                         sep = "\t",
+                         header = TRUE)
+```
+
+The meta-data, containing patient-ID's patient information, is downloaded and stored in raw-data directory.
+```{r}
+#| label: Load meta-data
+# Download the meta-data, if it is not already exists
+if( !file.exists(str_c(raw_dir, meta_file)) ){
+meta_data <- getGEO(GEO = geo,
+                    GSEMatrix = TRUE)
+}
+
+# Load the meta-data into R
+meta_data <- pData(phenoData(meta_data[[1]]))
+
+```
+### Save data as tsv files
+In the following the count-data and the meta-data are saved as .tsv-files
+```{r}
+#| label: Write tsv-files
+
+# Write a tsv file with the count-data to the data-directory
+count_data |> 
+  write_tsv(file = "data/01_dat_load_count.tsv")
+#count_data <- read_tsv(file = "data/01_dat_load_count")
+
+
+# Write a tsv file with the meta-data to the data-directory
+meta_data |> 
+  write_tsv(file = "data/01_dat_load_meta.tsv")
+```
+
+
