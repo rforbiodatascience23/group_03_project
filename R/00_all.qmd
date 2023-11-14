@@ -1,0 +1,15 @@
+---
+title: "Run all"
+format: html
+editor: visual
+---
+
+## Run analysis
+
+{{< include 01_load.qmd >}}
+
+{{< include 02_clean.qmd >}}
+
+#{{< include 03_describe.qmd >}}
+
+#{{< include 05_analysis.qmd >}}
