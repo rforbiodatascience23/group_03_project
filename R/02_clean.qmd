@@ -149,10 +149,17 @@ dat_clean <- inner_join(x = count_data,
 
 ```{r}
 dat_clean |>
-  filter(str_c()
+  filter(str_detect(patient_n, "_")) |> 
+  dplyr::select(starts_with("ILMN")) |> 
+  rowwise() |> 
+  mutate()
 ```
 
 
+```{r}
+dat_clean |> 
+  write_tsv(file = "../data/02_dat_clean.tsv")
+```
 
 
 
