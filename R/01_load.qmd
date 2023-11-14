@@ -26,7 +26,7 @@ In the following, the directory of the data is defined along with the location o
 ```{r}
 #| label: Set up
 
-raw_dir <- "data/_raw/"
+raw_dir <- "../data/_raw/"
 count_file <- "GSE50834_non-normalized.txt.gz"
 meta_file <- "GSE50834_series_matrix.txt.gz"
 geo <- "GSE50834"
@@ -77,13 +77,11 @@ In the following the count-data and the meta-data are saved as .tsv-files
 
 # Write a tsv file with the count-data to the data-directory
 count_data |> 
-  write_tsv(file = "data/01_dat_load_count.tsv")
-#count_data <- read_tsv(file = "data/01_dat_load_count")
-
+  write_tsv(file = "../data/01_dat_load_count.tsv")
 
 # Write a tsv file with the meta-data to the data-directory
 meta_data |> 
-  write_tsv(file = "data/01_dat_load_meta.tsv")
+  write_tsv(file = "../data/01_dat_load_meta.tsv")
 ```
 
 
