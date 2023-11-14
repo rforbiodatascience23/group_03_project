@@ -29,3 +29,12 @@ augment_data = count_data |>
   mutate_at(vars(starts_with("ILMN")), log2)
 
 ```
+
+Writes a tsv file containing the augment data.
+
+```{r}
+# Write a tsv file with the log-transformed data to the data-directory
+augment_data |> 
+  write_tsv(file = "../data/04_dat_aug.tsv")
+```
+
