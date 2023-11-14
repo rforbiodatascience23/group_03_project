@@ -4,23 +4,28 @@ format: html
 editor: visual
 ---
 
-## Quarto
+## Augment
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+This document takes care of the augment of the data. 
+In the following the data will be log2 transformed.
 
-## Running Code
+## Load data
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
+Load the clean data.
 ```{r}
-1 + 1
+#| label: load data
+clean_data <- read_tsv(file = "../data/02_dat_clean")
+
 ```
 
-You can add options to executable code like this
+## Transformation
+
+In the following the data will be log2 transformed.
 
 ```{r}
-#| echo: false
-2 * 2
-```
+#| label: log-transformation
 
-The `echo: false` option disables the printing of code (only output is displayed).
+augment_data = count_data |>
+  mutate_at(vars(starts_with("ILMN")), log2)
+
+```
