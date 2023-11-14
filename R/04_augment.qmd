@@ -33,8 +33,11 @@ augment_data = count_data |>
 Writes a tsv file containing the augment data.
 
 ```{r}
+#| label: write tsv
+
 # Write a tsv file with the log-transformed data to the data-directory
 augment_data |> 
   write_tsv(file = "../data/04_dat_aug.tsv")
+
 ```
 
