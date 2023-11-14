@@ -1,0 +1,162 @@
+---
+title: "Data Clean"
+format: html
+editor: visual
+---
+
+Loading required packages.
+
+```{r}
+#| message: false
+library("tidyverse")
+library("dplyr")
+library("stringr")
+```
+
+## Data Load
+
+Load 01_dat_load.tsv
+
+## Data Wrangling I
+
+In this section, the data variables are cleaned up for count data and meta data seperately.
+
+### Gene Expression Counts
+
+We see that the data do not only consist of gene counts but is also interrupted by p values.
+
+```{r}
+count_data |> 
+  sample()
+```
+
+The detected p values are removed such that only the counts are left.
+
+```{r}
+count_data <- count_data |> 
+  dplyr::select(-matches(match = "Detection.Pval"))
+
+count_data |> 
+  sample()
+```
+
+Column names are simplyfied.
+
+```{r}
+count_data |> 
+  colnames() = str_extract(string = colnames(count_data),
+                           pattern = "^[A-Z0-9]+\\.?[0-9]*")
+
+count_data |> 
+  sample()
+```
+
+### Meta Data
+
+We see what meta data is available for the samples.
+
+```{r}
+colnames(meta_data)
+```
+
+characteristics_ch1 and characteristics_ch1.2. This information is also found in the variables gender:ch1 and disease state:ch1 in a nicer format. We chose to work with the first mentioned columns for educational purposes.
+
+```{r}
+meta_data <- meta_data |>
+  dplyr::select(title,
+               geo_accession,
+               characteristics_ch1,
+               characteristics_ch1.2,
+               description.1) |> 
+  rename(title = "patient_n",
+         characteristics_ch1 = "gender",
+         characteristics_ch1.2 = "disease_state",
+         description.1 = "identifier")
+```
+
+We clean up patient, gender and disease state columns.
+
+```{r}
+meta_data <- meta_data |> 
+  mutate(patient_n = str_extract(string = patient_n,
+                                 pattern = "[0-9]+_?[0-9]?"),
+         gender = str_extract(string = gender,
+                              pattern = "Female|Male"),
+         disease_state = str_extract(string = disease_state,
+                              pattern = "HIV/TB|HIV"))
+meta_data |> 
+  sample()
+```
+
+The identifier is splitted to simplify the identifier but still keeping the information about the dates.
+
+```{r}
+meta_data <- meta_data |> 
+  separate(col = identifier,
+           into = c("identifier", "date"),
+           sep = "_")
+
+meta_data |> 
+  sample()
+```
+
+
+In the count data, the "-" in the identifier (column names) is a ".". We replace the "-" in the metadata:
+
+```{r}
+meta_data <- meta_data |> 
+  mutate(identifier = str_replace_all(string = identifier,
+                                      pattern = "-",
+                                      replacement = "."))
+```
+
+We check if there is consensus between the identifiers in the meta data and the column names of the count data.
+
+```{r}
+setdiff(colnames(count_data), meta_data$identifier)
+```
+
+The only difference between identifiers and column names of the count data is the ID column for the genes as expected.
+
+## Data Wrangling II
+
+In the following steps, the format of the data will be changed. Furthermore, we wish to join the count data and the meta data. 
+
+### Pivot Data 
+
+The count data is pivoted from long to wide. 
+
+```{r}
+count_data <- count_data |> pivot_longer(cols = AAA0VKQN.12:EAA0ZNH3.13, 
+                                names_to = "identifier",
+                                values_to = "count") |> 
+  pivot_wider(names_from = ID,
+              values_from = count)
+```
+
+### Join Count and Meta Data
+
+The meta data and the count data should be merge such that all data about a patient is contained in one tibble. Meta data should be in the first columns followed by gene variables.
+
+```{r}
+dat_clean <- inner_join(x = count_data,
+                        y = meta_data,
+                        by = "identifier") |> 
+  relocate(colnames(meta_data))
+```
+
+### Handling Duplicates
+
+```{r}
+dat_clean |>
+  filter(str_c()
+```
+
+
+
+
+
+
+
+
+
