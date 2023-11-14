@@ -14,7 +14,7 @@ In the following the data will be log2 transformed.
 Load the clean data.
 ```{r}
 #| label: load data
-clean_data <- read_tsv(file = "../data/02_dat_clean")
+clean_data <- read_tsv(file = "../data/02_dat_clean.tsv")
 
 ```
 
