@@ -47,18 +47,18 @@ select(-y)
 
 ```{r}
 pca_fit <- dat |> 
-  select(where(is.numeric)) |> # retain only numeric columns
-  scale() %>% # scale data
+  select(where(is.numeric)) |> # only do pca on numeric columns
+  scale() %>%
   prcomp()
 
 ```
 ### Plot principal components against each other
 ```{r}
-pca_fit_full <- pca_fit %>%
-  augment(dat)
+pca_fit_aug <- pca_fit %>%
+  augment(dat) # merge pca and original dataset
 
 
-ggplot(pca_fit_full,
+ggplot(pca_fit_aug,
        mapping = aes(x = .fittedPC1, y = .fittedPC2, color = disease_state)) + 
   geom_point() +
   scale_color_manual(
@@ -90,6 +90,7 @@ ggplot(pca_fit_rotation,
   labs(
     title = "Rotation matrix"
   ) +
+  coord_fixed() + 
   theme_minimal()
 ```
 ### Plot the variance explained
