@@ -4,24 +4,23 @@ format: html
 editor: visual
 ---
 
+## Setup
+
 Loading required packages.
 
 ```{r}
 #| message: false
 library("tidyverse")
 library("dplyr")
-library("stringr")
-library("readr")
 ```
 
-## Data Load
+Loading the data.
 
 ```{r}
 #| message: false
 count_data <- read_tsv("../data/01_dat_load_count.tsv")
 meta_data <- read_tsv("../data/01_dat_load_meta.tsv")
 ```
-
 
 ## Data Wrangling I
 
@@ -33,7 +32,7 @@ We see that the data do not only consist of gene counts but is also interrupted 
 
 ```{r}
 count_data |> 
-  sample()
+  sample_n(10)
 ```
 
 The detected p values are removed such that only the counts are left.
@@ -43,10 +42,10 @@ count_data <- count_data |>
   dplyr::select(-matches(match = "Detection.Pval"))
 
 count_data |> 
-  sample()
+  sample_n(10)
 ```
 
-Column names are simplified.
+Column names are simplified as the date is saved in the meta data.
 
 ```{r}
 count_data |> 
@@ -54,7 +53,7 @@ count_data |>
                            pattern = "^[A-Z0-9]+\\.?[0-9]*")
 
 count_data |> 
-  sample()
+  sample_n(10)
 ```
 
 ### Meta Data
@@ -65,19 +64,19 @@ We see what meta data is available for the samples.
 colnames(meta_data)
 ```
 
-characteristics_ch1 and characteristics_ch1.2. This information is also found in the variables gender:ch1 and disease state:ch1 in a nicer format. We chose to work with the first mentioned columns for educational purposes.
+We will be interested in keeping title, geo_accession, and description.1. The last mentioned column is the identifier fom each sample that is found in the data for expression counts. Furthermore, we want information about gender and disease state described by characteristics_ch1 and characteristics_ch1.2. This information is also found in the variables gender:ch1 and disease state:ch1 in a nicer format. We chose to work with the first mentioned columns for educational purposes.
 
 ```{r}
 meta_data <- meta_data |>
   dplyr::select(title,
-               geo_accession,
-               characteristics_ch1,
-               characteristics_ch1.2,
-               description.1) |> 
-  rename("patient_n" = title,
-         "gender" =  characteristics_ch1,
-         "disease_state" = characteristics_ch1.2,
-         "identifier" = description.1)
+                geo_accession,
+                characteristics_ch1,
+                characteristics_ch1.2,
+                description.1) |> 
+  dplyr::rename("patient_n" = title,
+                "gender" = characteristics_ch1,
+                "disease_state" = characteristics_ch1.2,
+                "identifier" = description.1)
 ```
 
 We clean up patient, gender and disease state columns.
@@ -91,10 +90,10 @@ meta_data <- meta_data |>
          disease_state = str_extract(string = disease_state,
                               pattern = "HIV/TB|HIV"))
 meta_data |> 
-  sample()
+  sample_n(10)
 ```
 
-The identifier is splitted to simplify the identifier but still keeping the information about the dates.
+The identifier is splited to simplify the identifier but still keeping the information about the dates.
 
 ```{r}
 meta_data <- meta_data |> 
@@ -103,7 +102,7 @@ meta_data <- meta_data |>
            sep = "_")
 
 meta_data |> 
-  sample()
+  sample_n(10)
 ```
 
 In the count data, the "-" in the identifier (column names) is a ".". We replace the "-" in the metadata:
@@ -127,7 +126,7 @@ The only difference between identifiers and column names of the count data is th
 
 In the following steps, the format of the data will be changed. Furthermore, we wish to join the count data and the meta data.
 
-### Pivot Data
+### Data Pivoting
 
 The count data is pivoted from long to wide.
 
@@ -139,7 +138,7 @@ count_data <- count_data |> pivot_longer(cols = AAA0VKQN.12:EAA0ZNH3.13,
               values_from = count)
 ```
 
-### Join Count and Meta Data
+### Data Joining
 
 The meta data and the count data should be merge such that all data about a patient is contained in one tibble. Meta data should be in the first columns followed by gene variables.
 
@@ -150,12 +149,63 @@ dat_clean <- inner_join(x = count_data,
   relocate(colnames(meta_data))
 ```
 
-### Handling Duplicates
+### Handling of Replicates
+
+There are two technical replicates available for one patient, namely patient 2_1 and 2_2 indicated by the patient_n column. We wish to averaged the measurements for this patient for further analysis. First, the gene expression values for the replicates are extracted. 
 
 ```{r}
-dat_clean <- dat_clean |>
-  filter(!str_detect(patient_n, "_2")) 
+dat_rep <- dat_clean |>
+  filter(str_detect(patient_n, "_")) |> 
+  dplyr::select(starts_with("ILMN")) |> 
+  pivot_longer(cols = starts_with("ILMN"),
+               names_to = "gene_id",
+               values_to = "expression")
+
+dat_rep |> 
+  sample_n(10)
 ```
+
+As seen from above, the data is pivoted which will be convenient for calculating of the average for each gene.
+
+```{r}
+dat_rep <- dat_rep |> 
+  group_by(gene_id) |> 
+  summarise(mean_expression = mean(expression))
+
+dat_rep |> 
+  sample_n(10)
+```
+
+The mean expression is calculated. Meta data is added to this "new" observation. 
+
+```{r}
+dat_rep <- dat_rep |> 
+  pivot_wider(names_from = gene_id,
+              values_from = mean_expression) |> 
+  add_column(patient_n = "2",
+             geo_accession = NA,
+             gender = "Female",
+             disease_state = "HIV",
+             identifier = NA,
+             date = "16-Apr-2009") 
+```
+
+The "new" observation for the patient is added to the data, and the replicates are removed. As the patient_n variable is no longer informative, this column is removed for all patients.
+
+```{r}
+dat_clean <- dat_clean |> 
+  add_row(dat_rep) |> 
+  filter(!str_detect(patient_n, "_")) |> 
+  dplyr::select(-patient_n) |> 
+  arrange(disease_state)
+
+dat_clean |> 
+  sample_n(10)
+```
+
+## Write Data to File
+
+The cleaned data is written as a tsv file.
 
 ```{r}
 dat_clean |> 
