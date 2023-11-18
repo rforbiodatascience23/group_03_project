@@ -117,7 +117,8 @@ meta_data <- meta_data |>
 We check if there is consensus between the identifiers in the meta data and the column names of the count data.
 
 ```{r}
-setdiff(colnames(count_data), meta_data$identifier)
+#setdiff(colnames(count_data), meta_data$identifier) OBS, this is base R
+setdiff(colnames(count_data), meta_data |> pull(identifier)) 
 ```
 
 The only difference between identifiers and column names of the count data is the ID column for the genes as expected.
@@ -128,12 +129,13 @@ In the following steps, the format of the data will be changed. Furthermore, we 
 
 ### Data Pivoting
 
-The count data is pivoted from long to wide.
+The count data is transposed by pivoting sample identifiers to long format and gene ids to wide format.
 
 ```{r}
-count_data <- count_data |> pivot_longer(cols = AAA0VKQN.12:EAA0ZNH3.13, 
-                                names_to = "identifier",
-                                values_to = "count") |> 
+count_data <- count_data |> 
+  pivot_longer(cols = AAA0VKQN.12:EAA0ZNH3.13,
+               names_to = "identifier",
+               values_to = "count") |> 
   pivot_wider(names_from = ID,
               values_from = count)
 ```
@@ -151,7 +153,7 @@ dat_clean <- inner_join(x = count_data,
 
 ### Handling of Replicates
 
-There are two technical replicates available for one patient, namely patient 2_1 and 2_2 indicated by the patient_n column. We wish to averaged the measurements for this patient for further analysis. First, the gene expression values for the replicates are extracted. 
+There are two technical replicates available for one patient, namely patient 2_1 and 2_2 indicated by the patient_n column. We wish to averaged the measurements for this patient for further analysis. First, the gene expression values for the replicates are extracted.
 
 ```{r}
 dat_rep <- dat_clean |>
@@ -163,9 +165,10 @@ dat_rep <- dat_clean |>
 
 dat_rep |> 
   sample_n(10)
+
 ```
 
-As seen from above, the data is pivoted which will be convenient for calculating of the average for each gene.
+As seen from above, the data is pivoted which will be convenient for calculating the average for each gene.
 
 ```{r}
 dat_rep <- dat_rep |> 
@@ -174,9 +177,10 @@ dat_rep <- dat_rep |>
 
 dat_rep |> 
   sample_n(10)
+
 ```
 
-The mean expression is calculated. Meta data is added to this "new" observation. 
+The mean expression is calculated. Meta data is added to this "new" observation.
 
 ```{r}
 dat_rep <- dat_rep |> 
@@ -188,6 +192,7 @@ dat_rep <- dat_rep |>
              disease_state = "HIV",
              identifier = NA,
              date = "16-Apr-2009") 
+
 ```
 
 The "new" observation for the patient is added to the data, and the replicates are removed. As the patient_n variable is no longer informative, this column is removed for all patients.
@@ -199,9 +204,55 @@ dat_clean <- dat_clean |>
   dplyr::select(-patient_n) |> 
   arrange(disease_state)
 
-dat_clean |> 
-  sample_n(10)
+dat_clean |>  
+  filter(date == "16-Apr-2009")
 ```
+
+Alternative handling of replicates without hard coding. On the other hand it takes a lot of time for all the genes..
+
+```{r}
+# Just used to refresh the dat_clean
+dat_clean <- inner_join(x = count_data,
+                        y = meta_data,
+                        by = "identifier") |> 
+  relocate(colnames(meta_data))
+
+#extract duplicated patinet(s), rename patient_n to 1 identifyer, group by patient and calculate mean across all genes.
+dat_rep_patient <- dat_clean |>
+  filter(str_detect(patient_n, "_")) |>
+  mutate(patient_n = str_extract(string = patient_n, 
+                                 pattern = "[0-9]+")) 
+
+dat_rep_mean_gene <- dat_rep_patient |> 
+  group_by(patient_n) |>
+  select(1:100) |> #should be removed, but takes a lot of time for all genes
+  summarise(across(starts_with("ILMN"), 
+                   mean, na.rm = TRUE)) #na.rm to exclude NA from calculations
+
+#extract the metadata from duplicate(s) and keep only one row
+dat_rep_meta_cols <- dat_rep_patient |>
+  select(patient_n, gender, disease_state, date,geo_accession, identifier) |> 
+  mutate(geo_accession = NA,
+         identifier = NA) |> 
+  distinct(patient_n, .keep_all = TRUE)
+
+#Join mean expression data with extracted metadata from the person
+dat_rep_tot <- inner_join(x = dat_rep_meta_cols, 
+                          y = dat_rep_mean_gene,
+                          by = "patient_n")
+
+dat_clean <- bind_rows(dat_clean, dat_rep_tot) |>
+  filter(!str_detect(patient_n, "_")) |>  
+  dplyr::select(-patient_n) |> 
+  arrange(disease_state)
+  
+  
+dat_clean |> 
+  filter(date == "16-Apr-2009")  # (just used to check that the patient is added)
+  
+```
+
+
 
 ## Write Data to File
 
