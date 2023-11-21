@@ -10,24 +10,30 @@ editor: visual
 #| message: false
 library('tidyverse')
 library('broom')
-library('cowplot')
+library('lubridate')
 ```
 
 ## Load data OBS! Dette segment skal erstattes af load af vores eget data
 
 ```{r}
 #| message: false
-dat <- read_tsv("../data/02_dat_clean.tsv")
+dat_aug <- read_tsv("../data/04_dat_aug.tsv")
+
+# Just an experiment to see if the year of the test has an influence on the projection. Conclusion: It doesn't
+# dat_aug_new <- dat_aug |> 
+#   mutate(
+#     date = dmy(date),
+#     year = as.character(year(date)),
+#     .after = date
+#   )
 
 ```
 
 ## PCA analysis
 
 ```{r}
-pca_fit <- dat |> 
-  select(where(is.numeric)) |> # only do PCA on numeric columns
-  log2() |> 
-  scale() |> 
+pca_fit <- dat_aug |> 
+  select(starts_with("ILMN")) |>
   prcomp()
 
 ```
@@ -35,32 +41,55 @@ pca_fit <- dat |>
 ### Plot principal components against each other
 
 ```{r}
-pca_fit_aug <- pca_fit %>%
-  augment(dat) # merge pca and original dataset
+pca_fit_aug <- pca_fit |> 
+  augment(dat_aug)
+```
 
-
+PC 1 vs PC2
+```{r}
 ggplot(pca_fit_aug,
-       mapping = aes(x = .fittedPC1, y = .fittedPC2, color = disease_state)) + 
+       mapping = aes(x = .fittedPC1, y = .fittedPC2, color = gender, shape = disease_state)) + 
   geom_point() +
   scale_color_manual(
-    values = c("HIV" = "royalblue", "HIV/TB" = "tomato")
+    values = c("Male" = "royalblue", "Female" = "tomato")
   ) +
   labs(
     x = "PC1",
     y = "PC2",
-    color = "Disease state"
+    color = "Gender",
+    shape = "Disease state"
   ) +
   theme_minimal()
-
 ```
+
+PC2 vs PC3
+```{r}
+ggplot(pca_fit_aug,
+       mapping = aes(x = .fittedPC2, y = .fittedPC3, color = gender, shape = disease_state)) + 
+  geom_point() +
+  scale_color_manual(
+    values = c("Male" = "royalblue", "Female" = "tomato")
+  ) +
+  labs(
+    x = "PC2",
+    y = "PC3",
+    color = "Gender",
+    shape = "Disease state"
+  ) +
+  theme_minimal()
+```
+
+
 
 ### Plot the rotation matrix
 
 ```{r}
-pca_fit_rotation <- pca_fit %>%
-  tidy(matrix = "rotation") %>%
+pca_fit_rotation <- pca_fit |> 
+  tidy(matrix = "rotation") |> 
   pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value")
-
+```
+PC1 and PC2
+```{r}
 ggplot(pca_fit_rotation,
        mapping = aes(x = PC1, y = PC2)) +
   geom_segment(xend = 0, yend = 0, arrow = arrow()) +
@@ -74,16 +103,36 @@ ggplot(pca_fit_rotation,
   ) +
   theme_minimal()
 ```
+PC3 and PC4
+```{r}
+ggplot(pca_fit_rotation,
+       mapping = aes(x = PC2, y = PC3)) +
+  geom_segment(xend = 0, yend = 0, arrow = arrow()) +
+  geom_text(
+    mapping = aes(label = column),
+    hjust = 1, 
+    color = "royalblue", size = 2
+  ) +
+  labs(
+    title = "Rotation matrix"
+  ) +
+  theme_minimal()
+```
+
+
 
 ### Plot the variance explained
 
 ```{r}
-pca_fit_eigen <- pca_fit %>%
+pca_fit_eigen <- pca_fit |> 
   tidy(matrix = "eigenvalues")
 
 ggplot(pca_fit_eigen,
        mapping = aes(x = PC, y = percent)) +
   geom_col(fill = "royalblue") +
+  geom_smooth(mapping = aes(x = PC, y = cumulative), method = "loess", formula = y ~ x, color = "royalblue") +
+  geom_hline(yintercept = 0.95) +
+  annotate("text", x=38, y=0.93, label="95% variance explained") +
   scale_y_continuous(
     labels = scales::percent_format(),
     expand = expansion(mult = c(0, 0.01))
