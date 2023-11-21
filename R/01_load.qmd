@@ -26,7 +26,6 @@ In the following, the directory of the data is defined along with the location o
 
 ```{r}
 #| label: Set up
-
 dest_dir <- "../data/"
 raw_dir <- str_c(dest_dir, "_raw")
 count_file <- "GSE50834_non-normalized.txt.gz"
@@ -46,7 +45,7 @@ The count-data, containing patient-ID's and gene counts, is downloaded and store
 ```{r}
 #| label: Load count-data
 # Download the count-data, if it does not already exists
-if( !file.exists(str_c(raw_dir, count_file)) ){
+if( !file.exists(str_c(raw_dir, count_file, sep = "/")) ){
   getGEOSuppFiles(GEO = geo,
                   makeDirectory = FALSE,
                   baseDir = raw_dir,
@@ -55,7 +54,7 @@ if( !file.exists(str_c(raw_dir, count_file)) ){
 }
 
 # Load the count-data into R
-count_data <- read.table(file = str_c(raw_dir, count_file),
+count_data <- read.table(file = str_c(raw_dir, count_file, sep = "/"),
                          sep = "\t",
                          header = TRUE)
 ```
@@ -65,7 +64,7 @@ The meta-data, containing patient-ID's patient information, is downloaded and st
 ```{r}
 #| label: Load meta-data
 # Download the meta-data, if it does not already exists
-if( !file.exists(str_c(raw_dir, meta_file)) ){
+if( !file.exists(str_c(raw_dir, meta_file, sep = "/")) ){
   meta_data <- getGEO(GEO = geo,
                       destdir = raw_dir,
                       GSEMatrix = TRUE)
@@ -73,6 +72,9 @@ if( !file.exists(str_c(raw_dir, meta_file)) ){
 
 # Load the meta-data into R
 meta_data <- pData(phenoData(meta_data[[1]]))
+#meta_data <- read.table(file = str_c(raw_dir, meta_file, sep = "/"),
+#                         sep = "\t",
+#                         header = TRUE)
 
 ```
 
