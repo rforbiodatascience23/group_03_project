@@ -6,7 +6,7 @@ editor: visual
 
 ## Augment
 
-This document takes care of the augment of the data. In the following the data will be log2 transformed.
+This document takes care of the augment of the data. In the following the data will be log2 transformed. 
 
 ## Load data
 
