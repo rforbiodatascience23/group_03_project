@@ -13,7 +13,6 @@ library('broom')
 library('cowplot')
 ```
 
-
 ## Load data OBS! Dette segment skal erstattes af load af vores eget data
 
 ```{r}
@@ -32,7 +31,9 @@ pca_fit <- dat |>
   prcomp()
 
 ```
+
 ### Plot principal components against each other
+
 ```{r}
 pca_fit_aug <- pca_fit %>%
   augment(dat) # merge pca and original dataset
@@ -54,6 +55,7 @@ ggplot(pca_fit_aug,
 ```
 
 ### Plot the rotation matrix
+
 ```{r}
 pca_fit_rotation <- pca_fit %>%
   tidy(matrix = "rotation") %>%
@@ -72,6 +74,7 @@ ggplot(pca_fit_rotation,
   ) +
   theme_minimal()
 ```
+
 ### Plot the variance explained
 
 ```{r}
@@ -90,4 +93,3 @@ ggplot(pca_fit_eigen,
   ) +
   theme_minimal()
 ```
-

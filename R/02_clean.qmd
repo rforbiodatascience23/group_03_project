@@ -121,8 +121,11 @@ meta_data <- meta_data |>
 We check if there is consensus between the identifiers in the meta data and the column names of the count data.
 
 ```{r}
-#setdiff(colnames(count_data), meta_data$identifier) OBS, this is base R
-setdiff(colnames(count_data), meta_data |> pull(identifier)) 
+#| label: Compare identifiers for metadata and count data 
+meta_identifier <- meta_data |>
+  pull(identifier)
+
+setdiff(colnames(count_data),meta_identifier)
 ```
 
 The only difference between identifiers and column names of the count data is the ID column for the genes as expected.
@@ -160,100 +163,69 @@ dat_clean <- inner_join(x = count_data,
 There are two technical replicates available for one patient, namely patient 2_1 and 2_2 indicated by the patient_n column. We wish to averaged the measurements for this patient for further analysis. First, the gene expression values for the replicates are extracted.
 
 ```{r}
+#| label: Extract replicates
 dat_rep <- dat_clean |>
-  filter(str_detect(patient_n, "_")) |> 
-  dplyr::select(starts_with("ILMN")) |> 
-  pivot_longer(cols = starts_with("ILMN"),
-               names_to = "gene_id",
-               values_to = "expression")
-
-dat_rep |> 
-  sample_n(10)
-
-```
-
-As seen from above, the data is pivoted which will be convenient for calculating the average for each gene.
-
-```{r}
-dat_rep <- dat_rep |> 
-  group_by(gene_id) |> 
-  summarise(mean_expression = mean(expression))
-
-dat_rep |> 
-  sample_n(10)
-
-```
-
-The mean expression is calculated. Meta data is added to this "new" observation.
-
-```{r}
-dat_rep <- dat_rep |> 
-  pivot_wider(names_from = gene_id,
-              values_from = mean_expression) |> 
-  add_column(patient_n = "2",
-             geo_accession = NA,
-             gender = "Female",
-             disease_state = "HIV",
-             identifier = NA,
-             date = "16-Apr-2009") 
-
-```
-
-The "new" observation for the patient is added to the data, and the replicates are removed. As the patient_n variable is no longer informative, this column is removed for all patients.
-
-```{r}
-dat_clean <- dat_clean |> 
-  add_row(dat_rep) |> 
-  filter(!str_detect(patient_n, "_")) |> 
-  dplyr::select(-patient_n) |> 
-  arrange(disease_state)
-
-dat_clean |>  
-  filter(date == "16-Apr-2009")
-```
-
-Alternative handling of replicates without hard coding. On the other hand it takes a lot of time for all the genes..
-
-```{r}
-# Just used to refresh the dat_clean
-dat_clean <- inner_join(x = count_data,
-                        y = meta_data,
-                        by = "identifier") |> 
-  relocate(colnames(meta_data))
-
-#extract duplicated patinet(s), rename patient_n to 1 identifyer, group by patient and calculate mean across all genes.
-dat_rep_patient <- dat_clean |>
   filter(str_detect(patient_n, "_")) |>
   mutate(patient_n = str_extract(string = patient_n, 
                                  pattern = "[0-9]+")) 
 
-dat_rep_mean_gene <- dat_rep_patient |> 
+dat_rep 
+```
+
+The mean gene expression is calculated for each replicated patient.
+
+```{r}
+#| label: Mean expression for replicates
+#Calculate the mean expression across replicates of the same patient
+dat_rep_mean <- dat_rep |> 
   group_by(patient_n) |>
-  select(1:100) |> #should be removed, but takes a lot of time for all genes
   summarise(across(starts_with("ILMN"), 
                    mean, na.rm = TRUE)) #na.rm to exclude NA from calculations
 
-#extract the metadata from duplicate(s) and keep only one row
-dat_rep_meta_cols <- dat_rep_patient |>
-  select(patient_n, gender, disease_state, date,geo_accession, identifier) |> 
-  mutate(geo_accession = NA,
-         identifier = NA) |> 
-  distinct(patient_n, .keep_all = TRUE)
+dat_rep_mean
 
-#Join mean expression data with extracted metadata from the person
-dat_rep_tot <- inner_join(x = dat_rep_meta_cols, 
-                          y = dat_rep_mean_gene,
+```
+
+The metadata for each replicated patient is extracted. The "geo accession" and "identifer" is collapsed, meaning that the new "geo accession" and "identifer" for the replicated patient is a combination of the originals.
+
+Furthermore, a new column called "modified" is added to the metadata. The column describes if the patient has been modified (eg. the gene expression represent a mean of multiple gene expressions for one patient).
+
+```{r}
+#| label: Extraxt and collapse metadata for replicates
+cols_rep_meta_collapesed <- dat_rep |>
+  group_by(patient_n) |> 
+  summarise(geo_accession = paste0(geo_accession, collapse = "_"),
+            identifier = paste0(identifier, collapse = "_"))
+
+cols_rep_meta <- dat_rep |>
+  select(patient_n, gender, disease_state, date) |> 
+  distinct() |> 
+  add_column(cols_rep_meta_collapesed |> select(geo_accession, identifier),
+             modified = 1)
+```
+
+Combine the new metadata with the mean gene expression for the each replicated patient.
+
+```{r}
+#| label: Combine mean expression and metadata for replicates
+dat_rep_meta <- inner_join(x = cols_rep_meta, 
+                          y = dat_rep_mean,
                           by = "patient_n")
+```
 
-dat_clean <- bind_rows(dat_clean, dat_rep_tot) |>
+Finally, the new data for th replicated patients are combines with the data for the non-replicated patients to form a clean data set without replicates.
+
+As the patient_n variable is no longer informative, this column is removed for all patients.
+
+```{r}
+#| label: Add rep data with non-rep data
+dat_clean <- bind_rows(dat_clean, dat_rep_meta) |>
   filter(!str_detect(patient_n, "_")) |>  
   dplyr::select(-patient_n) |> 
   arrange(disease_state)
-  
-  
+
 dat_clean |> 
-  filter(date == "16-Apr-2009")  # (just used to check that the patient is added)
-  
+  sample_n(10)
 ```
 
 ## Write Data to File
