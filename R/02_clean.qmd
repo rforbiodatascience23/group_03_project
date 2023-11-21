@@ -121,8 +121,11 @@ meta_data <- meta_data |>
 We check if there is consensus between the identifiers in the meta data and the column names of the count data.
 
 ```{r}
-#setdiff(colnames(count_data), meta_data$identifier) OBS, this is base R
-setdiff(colnames(count_data), meta_data |> pull(identifier)) 
+#| label: Compare identifiers for metadata and count data 
+meta_identifier <- meta_data |>
+  pull(identifier)
+
+setdiff(colnames(count_data),meta_identifier)
 ```
 
 The only difference between identifiers and column names of the count data is the ID column for the genes as expected.
