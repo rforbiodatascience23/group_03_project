@@ -77,6 +77,10 @@ meta_data <- meta_data |>
                 "gender" = characteristics_ch1,
                 "disease_state" = characteristics_ch1.2,
                 "identifier" = description.1)
+
+meta_data |> 
+  select(patient_n, gender, disease_state) |>
+  sample_n(10)
 ```
 
 We clean up patient, gender and disease state columns.
@@ -251,8 +255,6 @@ dat_clean |>
   filter(date == "16-Apr-2009")  # (just used to check that the patient is added)
   
 ```
-
-
 
 ## Write Data to File
 
