@@ -6,7 +6,7 @@ editor: visual
 
 ## Augment
 
-This document takes care of the augment of the data. In the following the data will be log2 transformed. 
+This document takes care of the augment of the data. In the following the data will be log2 transformed.
 
 ## Load data
 
@@ -17,6 +17,8 @@ Load the clean data.
 clean_data <- read_tsv(file = "../data/02_dat_clean.tsv")
 
 ```
+
+## Normalization
 
 ## Transformation
 
