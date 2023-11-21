@@ -1,0 +1,144 @@
+
+
+** Linear regression model forrest plot, and vulcano plot
+
+## Load libraries
+
+```{r}
+library('tidyverse')
+library('broom')
+library("ggrepel")
+```
+
+
+## Read cleaned and augmented data 
+```{r}
+#| label: Read augment data
+dat_clean_aug <- read_tsv("../data/02_dat_clean.tsv")
+```
+
+The data is pivoted to long format and grouped by genes. Gene expression levels and disease label are nested pr. gene.   
+```{r}
+#| label: Create long version of data and group by gene
+  
+dat_clean_aug_long_nest <- dat_clean_aug |>
+  #select(1:20) |> #just for testing
+  pivot_longer(cols = matches("^ILMN_[0-9]+"),
+               names_to = "gene", 
+               values_to = "log2_expr_level") |> 
+               group_by(gene) |> 
+               nest()
+
+dat_clean_aug_long_nest 
+```
+
+A linar regression model is mapped to the nested data of each gene
+```{r}
+#| label: Calculate linear regression model for each gene
+dat_clean_aug_long_nest <- dat_clean_aug_long_nest |>
+  mutate(model_object = map(.x = data,
+                   .f = ~lm(formula = log2_expr_level ~ disease_state,
+                            data = .x)))
+```
+
+This chuck should be deleted, just a test 
+```{r}
+#| label: OBS, just a test to see how a single model object looks like with tidy stats.
+
+dat_clean_aug_long_nest |>
+  filter(gene == "ILMN_1762337") |> 
+  pull(model_object) |> 
+  #   we "pluck" the first element
+  pluck(1) |>
+  tidy(conf.int = TRUE,
+       conf.level = 0.95)
+```
+
+Tidy statistics are mapped to the model of each gene and saved in tidy_model_object
+```{r}
+#| label: apply tidy on all model objects using map
+
+dat_clean_aug_long_nest <- dat_clean_aug_long_nest |>
+  mutate(tidy_model_object = map(.x = model_object,
+                   .f = ~tidy(conf.int = TRUE,
+                              conf.level = 0.95,
+                              x = .x)))
+
+```
+
+The tidy model objects are unnested, only slope estimates are kept for each gene and selected together with p-values and CI values. Lastly, the data is being ungrouped.  
+```{r}
+#| label: unnest to get estimates and ungroup
+
+dat_estimates <- dat_clean_aug_long_nest |> 
+  unnest(tidy_model_object) |> 
+  filter(term != "(Intercept)") |> 
+  select(gene, p.value, estimate, conf.low, conf.high) |> 
+  ungroup()
+
+
+```
+
+An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05% significance level.
+```{r}
+
+#| label: add adjusted p-value and a significant label
+
+dat_estimates <- dat_estimates |> 
+  mutate(p_val_adjust = p.adjust(p.value),
+         #significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No")) 
+         significant = case_when(p.value <= 0.3 ~ "Yes", TRUE ~"No")) 
+
+
+```
+
+A forest plot is generated showing the genes that are significantly up- or downregulated in tuberculosis patients 
+```{r}
+#| label: Generate forrest plot, genes are reordered according to estimate
+#retrieve significant genes
+dat_forest_plot <- dat_estimates |> 
+  filter(significant == "Yes") 
+
+forest_plot <- ggplot(data=dat_forest_plot, aes(x=estimate, y=fct_reorder(gene, estimate), xmin = conf.low, xmax = conf.high)) +
+  geom_point() +
+  geom_errorbarh() +
+  labs(
+    x = "Estimates (95% CIs)", y = "", title = "Genes Associated with Tuberculosis in HIV patients"  
+  ) +
+  theme_minimal()
+
+#OBS. Change when we change the wd
+ggsave("../results/forest_plot.png",plot = forest_plot) 
+
+```
+
+A vulcanoplot showing
+```{r}
+#| label: Generate vulcano plot, add gene_label for plotting
+
+dat_vulcano_plot <- dat_estimates |> 
+  mutate(gene_labels = case_when(p_val_adjust <= 0.05 ~ gene, TRUE ~""))
+
+vulcano_plot <- ggplot(data=dat_vulcano_plot, aes(x=estimate,
+                                   y=-log10(p.value), 
+                                   color = gene_labels,
+                                   label = gene_labels)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    x = "Estimates (95%CIs)",
+    y = "-log10(p)",
+    title = "Genes Associated with Tuberculosis",
+    subtitle = "Genes highlighted in turquoise were significant after multiple testing correction"
+  ) +
+  theme_minimal() +
+  geom_text_repel(size = 2, max.overlaps = 20) +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0),  # Align main title to the left
+        plot.subtitle = element_text(hjust = 0)  # Align subtitle to the left
+  )
+
+#OBS. Change when we change the wd
+ggsave("../results/vulcano_plot.png",plot = vulcano_plot)  
+
+```
+
