@@ -37,7 +37,7 @@ In the following the data will be log2 transformed.
 
 dat_aug <- dat_clean |>
   #mutate_at(vars(starts_with("ILMN")), log2)
-  mutate(across(starts_with("ILMN"), log2)) # Dette er væsentlig hurtigere
+  mutate(across(starts_with("ILMN"), log2))  # Dette er væsentlig hurtigere
 
 ```
 
@@ -45,8 +45,6 @@ Writes a tsv file containing the augment data.
 
 ```{r}
 #| label: write tsv
-
-# Write a tsv file with the log-transformed data to the data-directory
 dat_aug |> 
   write_tsv(file = "../data/04_dat_aug.tsv")
 
