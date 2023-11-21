@@ -6,7 +6,7 @@ editor: visual
 
 ## Loading data
 
-This document will load the data from xxxx. Furthermore, the file will export the data to a tsv-file.
+This document will load the data from Gene Expression Omnibus. Furthermore, the file will export the data to a tsv-file.
 
 ### Loading required packages
 
