@@ -44,7 +44,6 @@ The count-data, containing patient-ID's and gene counts, is downloaded and store
 
 ```{r}
 #| label: Load count-data
-# Download the count-data, if it does not already exists
 if( !file.exists(str_c(raw_dir, count_file, sep = "/")) ){
   getGEOSuppFiles(GEO = geo,
                   makeDirectory = FALSE,
@@ -53,7 +52,6 @@ if( !file.exists(str_c(raw_dir, count_file, sep = "/")) ){
                   filter_regex = "txt")
 }
 
-# Load the count-data into R
 count_data <- read.table(file = str_c(raw_dir, count_file, sep = "/"),
                          sep = "\t",
                          header = TRUE)
@@ -63,18 +61,13 @@ The meta-data, containing patient-ID's patient information, is downloaded and st
 
 ```{r}
 #| label: Load meta-data
-# Download the meta-data, if it does not already exists
 if( !file.exists(str_c(raw_dir, meta_file, sep = "/")) ){
   meta_data <- getGEO(GEO = geo,
                       destdir = raw_dir,
                       GSEMatrix = TRUE)
 }
 
-# Load the meta-data into R
 meta_data <- pData(phenoData(meta_data[[1]]))
-#meta_data <- read.table(file = str_c(raw_dir, meta_file, sep = "/"),
-#                         sep = "\t",
-#                         header = TRUE)
 
 ```
 
@@ -85,17 +78,12 @@ In the following the count-data and the meta-data are saved as .tsv-files
 ```{r}
 #| label: Write tsv-files
 
-# Write a tsv file with the count-data to the data-directory
 count_data |> 
   write_tsv(file = str_c(dest_dir, "01_dat_load_count.tsv"))
-#count_data <- read_tsv(file = "data/01_dat_load_count")
 
-
-# Write a tsv file with the meta-data to the data-directory
 meta_data |> 
   write_tsv(file = str_c(dest_dir, "01_dat_load_meta.tsv"))
 
-# Write a tsv file with the meta-data to the data-directory
 meta_data |> 
   write_tsv(file = "../data/01_dat_load_meta.tsv")
 ```
