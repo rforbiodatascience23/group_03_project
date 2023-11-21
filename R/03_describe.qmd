@@ -4,32 +4,85 @@ format: html
 editor: visual
 ---
 
-## Load libraries
+## Setup
+
+Loading required packages
 
 ```{r}
 #| message: false
-library('tidyverse')
-library('readr')
+library("tidyverse")
+library("table1")
 ```
 
-## Load data
+Loading the cleaned data.
 
 ```{r}
 #| message: false
-dat <- read_tsv("../data/02_dat_clean.tsv")
+dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 ```
 
-## Describe the data
+## Data describtion
+
+The barplot below shows the number of males and females for each patient group.
 
 ```{r}
-ggplot(dat,
-       mapping = aes(x = disease_state, fill = gender)) +
-  geom_bar() +
+ggplot(data = dat_clean,
+       mapping = aes(x = disease_state, 
+                     fill = gender)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(
+    values = c("Male" = "royalblue", 
+               "Female" = "tomato")
+  ) +
   theme_minimal() + 
   labs(
     x = "Disease state",
     y = "Cases",
-    fill = "Gender"
+    fill = "Gender",
+    title = str_c("Distribution of males and females for HIV mono-infected and",
+                  "\n",
+                  "HIV/TB co-infected patients"),
+    caption = "Data from Dawany et al. (2014)"
   )
-
 ```
+
+The above figur can also be summarized in a table. 
+
+```{r}
+dat_clean |>
+  mutate(Gender = factor(gender),
+         Disease = factor(disease_state)) |> 
+  table1(x = formula(~ Gender | Disease))
+```
+
+We want to get an idea of the magnitude of the expression values.
+
+```{r}
+dat_clean |> 
+  pivot_longer(cols = starts_with("ILMN"),
+               names_to = "gene_id",
+               values_to = "expression") |> 
+  mutate(logtrans = log2(expression)) |> 
+  ggplot(mapping = aes(x = geo_accession,
+                       y = exprelogtrans)) +
+  geom_boxplot() +
+  theme_minimal()
+```
+
+```{r}
+dat_clean |> 
+  pivot_longer(cols = starts_with("ILMN"),
+               names_to = "gene_id",
+               values_to = "expression") |> 
+  group_by(geo_accession) |> 
+  summarise(maximum = max(expression),
+            minimum = min(expression)) |> 
+  ggplot(mapping = aes(x = minimum)) +
+  geom_density()
+```
+
+
+
+
+
+
