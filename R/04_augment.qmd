@@ -27,7 +27,7 @@ In the following the data will be log2 transformed.
 ```{r}
 #| label: log-transformation
 
-augment_data = count_data |>
+augment_data <- count_data |>
   mutate_at(vars(starts_with("ILMN")), log2)
 
 ```
