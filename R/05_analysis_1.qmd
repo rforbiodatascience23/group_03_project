@@ -47,7 +47,7 @@ pca_fit_aug <- pca_fit |>
 
 PC 1 vs PC2
 ```{r}
-ggplot(pca_fit_aug,
+scatter_pc1_pc2 <- ggplot(pca_fit_aug,
        mapping = aes(x = .fittedPC1, y = .fittedPC2, color = gender, shape = disease_state)) + 
   geom_point() +
   scale_color_manual(
@@ -60,11 +60,13 @@ ggplot(pca_fit_aug,
     shape = "Disease state"
   ) +
   theme_minimal()
+ggsave("../results/scatter_pc1_pc2.png", plot = scatter_pc1_pc2)
+show(scatter_pc1_pc2)
 ```
 
 PC2 vs PC3
 ```{r}
-ggplot(pca_fit_aug,
+scatter_pc2_pc3 <- ggplot(pca_fit_aug,
        mapping = aes(x = .fittedPC2, y = .fittedPC3, color = gender, shape = disease_state)) + 
   geom_point() +
   scale_color_manual(
@@ -77,6 +79,8 @@ ggplot(pca_fit_aug,
     shape = "Disease state"
   ) +
   theme_minimal()
+ggsave("../results/scatter_pc2_pc3.png", plot = scatter_pc2_pc3)
+show(scatter_pc2_pc3)
 ```
 
 
@@ -90,7 +94,7 @@ pca_fit_rotation <- pca_fit |>
 ```
 PC1 and PC2
 ```{r}
-ggplot(pca_fit_rotation,
+rotation_pc1_pc2 <- ggplot(pca_fit_rotation,
        mapping = aes(x = PC1, y = PC2)) +
   geom_segment(xend = 0, yend = 0, arrow = arrow()) +
   geom_text(
@@ -102,10 +106,12 @@ ggplot(pca_fit_rotation,
     title = "Rotation matrix"
   ) +
   theme_minimal()
+ggsave("../results/rotation_pc1_pc2.png", plot = rotation_pc1_pc2)
+show(rotation_pc1_pc2)
 ```
 PC3 and PC4
 ```{r}
-ggplot(pca_fit_rotation,
+rotation_pc2_pc3 <- ggplot(pca_fit_rotation,
        mapping = aes(x = PC2, y = PC3)) +
   geom_segment(xend = 0, yend = 0, arrow = arrow()) +
   geom_text(
@@ -117,6 +123,9 @@ ggplot(pca_fit_rotation,
     title = "Rotation matrix"
   ) +
   theme_minimal()
+ggsave("../results/rotation_pc2_pc3.png", plot = rotation_pc2_pc3)
+show(rotation_pc2_pc3)
+
 ```
 
 
@@ -127,7 +136,7 @@ ggplot(pca_fit_rotation,
 pca_fit_eigen <- pca_fit |> 
   tidy(matrix = "eigenvalues")
 
-ggplot(pca_fit_eigen,
+var_explained <- ggplot(pca_fit_eigen,
        mapping = aes(x = PC, y = percent)) +
   geom_col(fill = "royalblue") +
   geom_smooth(mapping = aes(x = PC, y = cumulative), method = "loess", formula = y ~ x, color = "royalblue") +
@@ -141,4 +150,6 @@ ggplot(pca_fit_eigen,
     y = "Variance explained"
   ) +
   theme_minimal()
+ggsave("../results/var_explained.png", plot = var_explained)
+show(var_explained)
 ```
