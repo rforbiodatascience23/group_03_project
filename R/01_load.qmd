@@ -11,6 +11,7 @@ This document will load the data from Gene Expression Omnibus. Furthermore, the 
 ### Loading required packages
 
 ```{r}
+#| label: Load packages
 #| message: false
 library("tidyverse")
 library("dplyr")
@@ -61,13 +62,20 @@ The meta-data, containing patient-ID's patient information, is downloaded and st
 
 ```{r}
 #| label: Load meta-data
-if( !file.exists(str_c(raw_dir, meta_file, sep = "/")) ){
-  meta_data <- getGEO(GEO = geo,
-                      destdir = raw_dir,
-                      GSEMatrix = TRUE)
+if (!file.exists(str_c(raw_dir, meta_file, sep = "/"))){
+  meta_data <- getGEO(GEO = geo)
+  
+  meta_data <- pData(phenoData(meta_data[[1]]))
+  write.table(meta_data_new, file = str_c(raw_dir, meta_file, sep = "/"), 
+              sep = "\t")
+  meta_data <- read.table(str_c(raw_dir, meta_file, sep = "/"), 
+                        sep = "\t",
+                        header = TRUE)
+} else {
+  meta_data <- read.table(str_c(raw_dir, meta_file, sep = "/"), 
+                          sep = "\t",
+                          header = TRUE)
 }
-
-meta_data <- pData(phenoData(meta_data[[1]]))
 
 ```
 
