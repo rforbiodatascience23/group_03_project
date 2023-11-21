@@ -232,16 +232,24 @@ dat_rep_patient <- dat_clean |>
 
 dat_rep_mean_gene <- dat_rep_patient |> 
   group_by(patient_n) |>
-  select(1:100) |> #should be removed, but takes a lot of time for all genes
+  #select(1:100) |> #should be removed, but takes a lot of time for all genes
   summarise(across(starts_with("ILMN"), 
                    mean, na.rm = TRUE)) #na.rm to exclude NA from calculations
 
 #extract the metadata from duplicate(s) and keep only one row
-dat_rep_meta_cols <- dat_rep_patient |>
-  select(patient_n, gender, disease_state, date,geo_accession, identifier) |> 
-  mutate(geo_accession = NA,
-         identifier = NA) |> 
-  distinct(patient_n, .keep_all = TRUE)
+
+collapesed_meta_cols <- dat_rep_patient |>
+  group_by(patient_n) |> 
+  summarise(geo_accession = paste0(geo_accession, collapse = "_"),
+            identifier = paste0(identifier, collapse = "_"))
+
+#extract the metadata from duplicate(s) and keep only one row
+rep_meta_cols <- dat_rep_patient |>
+  select(patient_n, gender, disease_state, date) |> 
+  distinct() |> 
+  add_column(collapesed_meta_cols |> select(geo_accession, identifier),
+             modified = 1)
+
 
 #Join mean expression data with extracted metadata from the person
 dat_rep_tot <- inner_join(x = dat_rep_meta_cols, 
