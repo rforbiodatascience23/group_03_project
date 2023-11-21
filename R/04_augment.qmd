@@ -8,13 +8,21 @@ editor: visual
 
 This document takes care of the augment of the data. In the following the data will be log2 transformed.
 
-## Load data
+## Set up
+
+Loading required packages.
+
+```{r}
+#| message: false
+library("dplyr")
+```
 
 Load the clean data.
 
 ```{r}
 #| label: load data
-clean_data <- read_tsv(file = "../data/02_dat_clean.tsv")
+#| message: false
+dat_clean <- read_tsv(file = "../data/02_dat_clean.tsv")
 
 ```
 
@@ -27,8 +35,9 @@ In the following the data will be log2 transformed.
 ```{r}
 #| label: log-transformation
 
-augment_data <- count_data |>
-  mutate_at(vars(starts_with("ILMN")), log2)
+dat_aug <- dat_clean |>
+  #mutate_at(vars(starts_with("ILMN")), log2)
+  mutate(across(starts_with("ILMN"), log2)) # Dette er væsentlig hurtigere
 
 ```
 
@@ -38,7 +47,7 @@ Writes a tsv file containing the augment data.
 #| label: write tsv
 
 # Write a tsv file with the log-transformed data to the data-directory
-augment_data |> 
+dat_aug |> 
   write_tsv(file = "../data/04_dat_aug.tsv")
 
 ```
