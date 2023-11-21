@@ -4,23 +4,17 @@ format:
   revealjs: 
     theme: simple
 editor: visual
-author: "Group 3: Anne Skov-Pedersen, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
+author: "Group 3: Anne Skov-Pedersen s184330, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
 ---
 
 ## Introduction
 
-![](../results/test_image.jpg){.absolute top=250 left=0 width="350" height="300"}
+![](../results/test_image.jpg){.absolute top="250" left="0" width="350" height="300"}
 
 ## Methods
 
-
-
 ## Results
-
-
 
 ## Discussion
 
 ## Conclusion
-
-
