@@ -51,7 +51,8 @@ if( !dir.exists(raw_dir) ){
 
 ```
 
-The expr-data, containing patient-ID's and gene expression, is downloaded and stored in raw-data directory.
+The expr-data, containing patient-ID's and gene expression, is downloaded and stored in raw-data directory using the GEOquery library.
+GEOquery can download datasets from the NCBI Gene Expression Omnibus (GEO), using a unique accession number.
 
 ```{r}
 #| label: Load expr-data
