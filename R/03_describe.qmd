@@ -12,6 +12,7 @@ Loading required packages
 #| message: false
 library("tidyverse")
 library("table1")
+library("webshot")
 ```
 
 Loading the cleaned data.
@@ -26,36 +27,89 @@ dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 The barplot below shows the number of males and females for each patient group.
 
 ```{r}
-ggplot(data = dat_clean,
-       mapping = aes(x = disease_state, 
-                     fill = gender)) +
-  geom_bar(position = "dodge") +
+# Define settings for the plot
+female_sign = intToUtf8(9792)
+male_sign = intToUtf8(9794)
+sign_size = 10
+bar_width = 0.75
+
+# Compute the numbers of females and males within each patient group 
+# (used for plotting venus and mars sign)
+groups <- dat_clean |> 
+  group_by(gender,
+           disease_state) |> 
+  summarize(n = n())
+
+# Plot the results
+barplot_patient_group <- ggplot(data = dat_clean,
+                                mapping = aes(x = disease_state,
+                                              fill = disease_state,
+                                              alpha = gender)) +
+  geom_bar(width = bar_width,
+           position = "dodge") +
   scale_fill_manual(
-    values = c("Male" = "royalblue", 
-               "Female" = "tomato")
+    values = c("HIV" = "royalblue", 
+               "HIV/TB" = "tomato")
   ) +
+  scale_alpha_manual(values = c("Male" = 0.6,
+                                "Female" = 0.9)) +
+  annotate("text", 
+           x = 1:2-bar_width/4, 
+           y = groups$n[1:2] + 2, 
+           label = female_sign, 
+           size = sign_size) +
+  annotate("text", 
+           x = 1:2+bar_width/4,
+           y = groups$n[3:4] + 2, 
+           label = male_sign, 
+           size = sign_size) +
   theme_minimal() + 
   labs(
     x = "Disease state",
     y = "Cases",
     fill = "Gender",
-    title = str_c("Distribution of males and females for HIV mono-infected and",
+    title = str_c("Distribution of males and females for HIV mono-infected and HIV/TB",
                   "\n",
-                  "HIV/TB co-infected patients"),
+                  "co-infected patients"),
     caption = "Data from Dawany et al. (2014)"
-  )
+  ) +
+  theme(legend.position = "none")
+
+ggsave("../results/barplot_patient_group.png", plot = barplot_patient_group)
+show(barplot_patient_group)
 ```
 
 The above figur can also be summarized in a table. 
 
 ```{r}
-dat_clean |>
+summary_table <- dat_clean |>
   mutate(Gender = factor(gender),
          Disease = factor(disease_state)) |> 
   table1(x = formula(~ Gender | Disease))
+show(summary_table)
 ```
 
-We want to get an idea of the magnitude of the expression values.
+## NORMALIZATION 
+
+This is some code for normalization. It should be modified and go in augment. 
+
+```{r}
+expr_data <- dat_clean |> 
+  select(starts_with("ILMN"))
+meta_data <- dat_clean |> 
+  select(-starts_with("ILMN"))
+
+expr_data <- normalize.quantiles(as.matrix(t(expr_data)), keep.names = TRUE)
+#expr_data <- log2(expr_data)
+expr_data <- as_tibble(log2(t(expr_data)))
+
+norm_data <- bind_cols(meta_data, expr_data)
+
+norm_data |> 
+  write_tsv(file = "../data/04_dat_aug_alternative.tsv")
+```
+
+This was just a way to briefly see the effect and is not expected to be included in the final code:
 
 ```{r}
 dat_clean |> 
@@ -64,25 +118,19 @@ dat_clean |>
                values_to = "expression") |> 
   mutate(logtrans = log2(expression)) |> 
   ggplot(mapping = aes(x = geo_accession,
-                       y = exprelogtrans)) +
+                       y = logtrans)) +
   geom_boxplot() +
   theme_minimal()
 ```
 
 ```{r}
-dat_clean |> 
+norm_data |> 
   pivot_longer(cols = starts_with("ILMN"),
                names_to = "gene_id",
                values_to = "expression") |> 
-  group_by(geo_accession) |> 
-  summarise(maximum = max(expression),
-            minimum = min(expression)) |> 
-  ggplot(mapping = aes(x = minimum)) +
-  geom_density()
+  ggplot(mapping = aes(x = geo_accession,
+                       y = expression)) +
+  geom_boxplot() +
+  theme_minimal()
 ```
-
-
-
-
-
 
