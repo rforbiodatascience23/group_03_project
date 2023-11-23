@@ -1,0 +1,15 @@
+---
+title: "00_all"
+format: html
+editor: visual
+---
+
+## 
+
+```{r}
+library(quarto)
+quarto_render(input = "R/01_load.qmd")
+```
+
+
+{{< include 01_load.qmd >}} 
