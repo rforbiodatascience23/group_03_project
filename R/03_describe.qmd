@@ -9,6 +9,7 @@ editor: visual
 Loading required packages
 
 ```{r}
+#| label: Load packages
 #| message: false
 library("tidyverse")
 library("table1")
@@ -18,15 +19,17 @@ library("webshot")
 Loading the cleaned data.
 
 ```{r}
+#| label: Load data
 #| message: false
 dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 ```
 
-## Data describtion
+## Data Description
 
-The barplot below shows the number of males and females for each patient group.
+Create a bar plot to illustrate the number of males and females for each patient group.
 
 ```{r}
+#| label: Bar plot
 # Define settings for the plot
 female_sign = intToUtf8(9792)
 male_sign = intToUtf8(9794)
@@ -79,58 +82,14 @@ ggsave("../results/barplot_patient_group.png", plot = barplot_patient_group)
 show(barplot_patient_group)
 ```
 
-The above figur can also be summarized in a table. 
+The distribution of males and females for each patient group can also be summarized in a table.
 
 ```{r}
+#| label: Summary table
 summary_table <- dat_clean |>
   mutate(Gender = factor(gender),
          Disease = factor(disease_state)) |> 
   table1(x = formula(~ Gender | Disease))
 show(summary_table)
-```
-
-## NORMALIZATION 
-
-This is some code for normalization. It should be modified and go in augment. 
-
-```{r}
-expr_data <- dat_clean |> 
-  select(starts_with("ILMN"))
-meta_data <- dat_clean |> 
-  select(-starts_with("ILMN"))
-
-expr_data <- normalize.quantiles(as.matrix(t(expr_data)), keep.names = TRUE)
-#expr_data <- log2(expr_data)
-expr_data <- as_tibble(log2(t(expr_data)))
-
-norm_data <- bind_cols(meta_data, expr_data)
-
-norm_data |> 
-  write_tsv(file = "../data/04_dat_aug_alternative.tsv")
-```
-
-This was just a way to briefly see the effect and is not expected to be included in the final code:
-
-```{r}
-dat_clean |> 
-  pivot_longer(cols = starts_with("ILMN"),
-               names_to = "gene_id",
-               values_to = "expression") |> 
-  mutate(logtrans = log2(expression)) |> 
-  ggplot(mapping = aes(x = geo_accession,
-                       y = logtrans)) +
-  geom_boxplot() +
-  theme_minimal()
-```
-
-```{r}
-norm_data |> 
-  pivot_longer(cols = starts_with("ILMN"),
-               names_to = "gene_id",
-               values_to = "expression") |> 
-  ggplot(mapping = aes(x = geo_accession,
-                       y = expression)) +
-  geom_boxplot() +
-  theme_minimal()
 ```
 
