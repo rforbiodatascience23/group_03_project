@@ -4,49 +4,48 @@ format: html
 editor: visual
 ---
 
-## Load libraries
+## Setup
+
+Loading required packages.
 
 ```{r}
+#| label: Load packages
 #| message: false
 library('tidyverse')
 library('broom')
 library('lubridate')
 ```
 
-## Load data OBS! Dette segment skal erstattes af load af vores eget data
+Load the augment data.
 
 ```{r}
+#| label: Load data
 #| message: false
-dat_aug <- read_tsv("../data/04_dat_aug.tsv")
-
-# Just an experiment to see if the year of the test has an influence on the projection. Conclusion: It doesn't
-# dat_aug_new <- dat_aug |> 
-#   mutate(
-#     date = dmy(date),
-#     year = as.character(year(date)),
-#     .after = date
-#   )
-
+dat_aug <- read_tsv(file = "../data/04_dat_aug.tsv")
 ```
 
-## PCA analysis
+## Principal Component Analysis
+
+In the following a Principal Component Analysis (PCA) is carried out on the augment data.
 
 ```{r}
+#| label: PCA 
 pca_fit <- dat_aug |> 
   select(starts_with("ILMN")) |>
   prcomp()
 
-```
-
-### Plot principal components against each other
-
-```{r}
 pca_fit_aug <- pca_fit |> 
   augment(dat_aug)
 ```
 
-PC 1 vs PC2
+### Plot Principal Components
+
+The Principal Components (PC) of the PCA is plotted against each other.
+
+First, the first PC is plotted against the second PC.
+
 ```{r}
+#| label: Plot PC1 vs PC2
 scatter_pc1_pc2 <- ggplot(pca_fit_aug,
        mapping = aes(x = .fittedPC1, y = .fittedPC2, color = gender, shape = disease_state)) + 
   geom_point() +
@@ -64,8 +63,10 @@ ggsave("../results/scatter_pc1_pc2.png", plot = scatter_pc1_pc2)
 show(scatter_pc1_pc2)
 ```
 
-PC2 vs PC3
+Secondly, the second PC is plotted against the third PC.
+
 ```{r}
+#| label: Plot PC2 vs PC3
 scatter_pc2_pc3 <- ggplot(pca_fit_aug,
        mapping = aes(x = .fittedPC2, y = .fittedPC3, color = gender, shape = disease_state)) + 
   geom_point() +
@@ -83,17 +84,23 @@ ggsave("../results/scatter_pc2_pc3.png", plot = scatter_pc2_pc3)
 show(scatter_pc2_pc3)
 ```
 
+### Plot the Rotation Matrix
 
-
-### Plot the rotation matrix
+The PCA is rotated to change the direction of the PCs.
 
 ```{r}
+#| label: Rotated PCA
 pca_fit_rotation <- pca_fit |> 
   tidy(matrix = "rotation") |> 
   pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value")
 ```
-PC1 and PC2
+
+The rotated PCs are plotted against each other.
+
+First, the first rotated PC is plotted against the second rotated PC.
+
 ```{r}
+#| label: Plot rotated PC1 vs PC2
 rotation_pc1_pc2 <- ggplot(pca_fit_rotation,
        mapping = aes(x = PC1, y = PC2)) +
   geom_segment(xend = 0, yend = 0, arrow = arrow()) +
@@ -109,8 +116,10 @@ rotation_pc1_pc2 <- ggplot(pca_fit_rotation,
 ggsave("../results/rotation_pc1_pc2.png", plot = rotation_pc1_pc2)
 show(rotation_pc1_pc2)
 ```
-PC3 and PC4
+Second, the second rotated PC is plotted against the third rotated PC.
+
 ```{r}
+#| label: Plot rotated PC2 vs PC3
 rotation_pc2_pc3 <- ggplot(pca_fit_rotation,
        mapping = aes(x = PC2, y = PC3)) +
   geom_segment(xend = 0, yend = 0, arrow = arrow()) +
@@ -128,11 +137,12 @@ show(rotation_pc2_pc3)
 
 ```
 
+### Plot the Variance Explained
 
-
-### Plot the variance explained
+The variance explained by each PC is plotted.
 
 ```{r}
+#| label: Plot variance explained
 pca_fit_eigen <- pca_fit |> 
   tidy(matrix = "eigenvalues")
 

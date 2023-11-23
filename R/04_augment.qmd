@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## Set up
+## Setup
 
 Loading required packages.
 

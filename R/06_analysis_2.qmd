@@ -1,51 +1,63 @@
+---
+title: "Analysis 2"
+format: html
+editor: visual
+---
 
+## Setup
 
-** Linear regression model forrest plot, and vulcano plot
-
-## Load libraries
+Loading required packages.
 
 ```{r}
+#| label: Load packages
+#| message: false
 library('tidyverse')
 library('broom')
 library("ggrepel")
 ```
 
+Load the augment data.
 
-## Read cleaned and augmented data 
 ```{r}
-#| label: Read augment data
-dat_clean_aug <- read_tsv("../data/02_dat_clean.tsv")
+#| label: Load data
+#| message: false
+dat_aug <- read_tsv(file = "../data/04_dat_aug.tsv")
 ```
 
-The data is pivoted to long format and grouped by genes. Gene expression levels and disease label are nested pr. gene.   
+
+## Linear Regression 
+
+In the following a linear regression model is mapped to the data.
+In order to do so, the data need to be pivoted to long format and grouped by genes. Gene expression levels and disease label are nested pr. gene.
+
 ```{r}
-#| label: Create long version of data and group by gene
-  
-dat_clean_aug_long_nest <- dat_clean_aug |>
-  #select(1:20) |> #just for testing
+#| label: Pivot and nest data
+dat_nest <- dat_aug |>
   pivot_longer(cols = matches("^ILMN_[0-9]+"),
                names_to = "gene", 
                values_to = "log2_expr_level") |> 
                group_by(gene) |> 
                nest()
 
-dat_clean_aug_long_nest 
+dat_nest
 ```
 
-A linar regression model is mapped to the nested data of each gene
+A linar regression model is mapped to the nested data of each gene.
+
 ```{r}
-#| label: Calculate linear regression model for each gene
-dat_clean_aug_long_nest <- dat_clean_aug_long_nest |>
+#| label: Linear regression model 
+dat_nest <- dat_nest |>
   mutate(model_object = map(.x = data,
                    .f = ~lm(formula = log2_expr_level ~ disease_state,
                             data = .x)))
 ```
 
-This chuck should be deleted, just a test 
+This chuck should be deleted, just a test
+
 ```{r}
 #| label: OBS, just a test to see how a single model object looks like with tidy stats.
 
-dat_clean_aug_long_nest |>
+dat_nest|>
   filter(gene == "ILMN_1762337") |> 
   pull(model_object) |> 
   #   we "pluck" the first element
@@ -54,11 +66,11 @@ dat_clean_aug_long_nest |>
        conf.level = 0.95)
 ```
 
-Tidy statistics are mapped to the model of each gene and saved in tidy_model_object
-```{r}
-#| label: apply tidy on all model objects using map
+Tidy statistics are mapped to the model of each gene and saved in 'tidy_model_object'.
 
-dat_clean_aug_long_nest <- dat_clean_aug_long_nest |>
+```{r}
+#| label: Apply tidy to model objects
+dat_nest <- dat_nest |>
   mutate(tidy_model_object = map(.x = model_object,
                    .f = ~tidy(conf.int = TRUE,
                               conf.level = 0.95,
@@ -66,35 +78,34 @@ dat_clean_aug_long_nest <- dat_clean_aug_long_nest |>
 
 ```
 
-The tidy model objects are unnested, only slope estimates are kept for each gene and selected together with p-values and CI values. Lastly, the data is being ungrouped.  
-```{r}
-#| label: unnest to get estimates and ungroup
+The tidy model objects are unnested, only slope estimates are kept for each gene and selected together with p-values and CI values. Lastly, the data is being ungrouped.
 
-dat_estimates <- dat_clean_aug_long_nest |> 
+```{r}
+#| label: Unnest and ungroup data
+dat_estimates <- dat_nest |> 
   unnest(tidy_model_object) |> 
   filter(term != "(Intercept)") |> 
   select(gene, p.value, estimate, conf.low, conf.high) |> 
   ungroup()
-
-
 ```
 
 An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05% significance level.
+
 ```{r}
-
-#| label: add adjusted p-value and a significant label
-
+#| label: Adjusted p-value and significant label
 dat_estimates <- dat_estimates |> 
   mutate(p_val_adjust = p.adjust(p.value),
          #significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No")) 
          significant = case_when(p.value <= 0.3 ~ "Yes", TRUE ~"No")) 
-
-
 ```
 
-A forest plot is generated showing the genes that are significantly up- or downregulated in tuberculosis patients 
+### Forest Plot
+
+A forest plot is generated showing the genes that are significantly up- or downregulated in tuberculosis patients (TB).
+
 ```{r}
-#| label: Generate forrest plot, genes are reordered according to estimate
+#| label: Forrest plot
+# - genes are reordered according to estimate
 #retrieve significant genes
 dat_forest_plot <- dat_estimates |> 
   filter(significant == "Yes") 
@@ -112,9 +123,13 @@ ggsave("../results/forest_plot.png",plot = forest_plot)
 
 ```
 
-A vulcanoplot showing
+### Vulcano Plot
+
+A vulcano plot is generated to show ...
+
 ```{r}
-#| label: Generate vulcano plot, add gene_label for plotting
+#| label: Vulcano plot
+# add gene_label for plotting
 
 dat_vulcano_plot <- dat_estimates |> 
   mutate(gene_labels = case_when(p_val_adjust <= 0.05 ~ gene, TRUE ~""))
@@ -141,4 +156,3 @@ vulcano_plot <- ggplot(data=dat_vulcano_plot, aes(x=estimate,
 ggsave("../results/vulcano_plot.png",plot = vulcano_plot)  
 
 ```
-
