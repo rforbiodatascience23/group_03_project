@@ -4,48 +4,92 @@ format: html
 editor: visual
 ---
 
-## Augment
-
-This document takes care of the augment of the data. In the following the data will be log2 transformed.
-
 ## Set up
 
 Loading required packages.
 
 ```{r}
+#| label: Load packages
 #| message: false
 library("dplyr")
+library(preprocessCore)
 ```
 
 Load the clean data.
 
 ```{r}
-#| label: load data
+#| label: Load data
 #| message: false
 dat_clean <- read_tsv(file = "../data/02_dat_clean.tsv")
-
 ```
+
+In the following the gene expression data will be normalised and log2 transformed. In order to do so the clean data is split into gene expression data and meta data.
+```{r}
+#| label: Split data
+dat_expr <- dat_clean |> 
+  select(starts_with("ILMN")) 
+  
+dat_meta <- dat_clean |> 
+  select(-starts_with("ILMN"))
+```
+
 
 ## Normalization
 
-## Transformation
+The gene expression levels in the cleaned data are normalized by quantile normalization. This ensures that expression levels can be compared between different genes.
 
-In the following the data will be log2 transformed.
+```{r}
+#| label: Normalise dat_expr
+dat_expr <- normalize.quantiles(as.matrix(t(dat_expr)), keep.names = TRUE)
+```
+
+
+## Log Transformation
+
+In the following the gene expression data is log2 transformed.
 
 ```{r}
 #| label: log-transformation
-
-dat_aug <- dat_clean |>
-  #mutate_at(vars(starts_with("ILMN")), log2)
-  mutate(across(starts_with("ILMN"), log2))  # Dette er væsentlig hurtigere
-
+dat_expr <- as_tibble(log2(t(dat_expr)))
 ```
 
-Writes a tsv file containing the augment data.
+## Write Data to Files
+
+The normalised and log2 transformed gene expression data and the meta-data are combined and saved as .tsv-files
 
 ```{r}
-#| label: write tsv
+dat_aug <- bind_cols(dat_meta, dat_expr)
+```
+
+```{r}
+#| label: Write tsv-files
 dat_aug |> 
   write_tsv(file = "../data/04_dat_aug.tsv")
 
 ```
+
+
+This was just a way to briefly see the effect and is not expected to be included in the final code:
+```{r}
+dat_clean |> 
+  pivot_longer(cols = starts_with("ILMN"),
+               names_to = "gene_id",
+               values_to = "expression") |> 
+  mutate(logtrans = log2(expression)) |> 
+  ggplot(mapping = aes(x = geo_accession,
+                       y = logtrans)) +
+  geom_boxplot() +
+  theme_minimal()
+```
+
+```{r}
+norm_data |> 
+  pivot_longer(cols = starts_with("ILMN"),
+               names_to = "gene_id",
+               values_to = "expression") |> 
+  ggplot(mapping = aes(x = geo_accession,
+                       y = expression)) +
+  geom_boxplot() +
+  theme_minimal()
+```
+
