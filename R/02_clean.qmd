@@ -154,7 +154,7 @@ The gene expression data is transposed by pivoting sample 'identifier' to long f
 ```{r}
 #| label: Pivot dat_expr
 dat_expr <- dat_expr |> 
-  pivot_longer(cols = AAA0VKQN.12:EAA0ZNH3.13,
+  pivot_longer(cols = !ID,
                names_to = "identifier",
                values_to = "count") |> 
   pivot_wider(names_from = ID,
@@ -199,12 +199,9 @@ dat_rep_mean <- dat_rep |>
                    mean, na.rm = TRUE))
 
 dat_rep_mean
-
 ```
 
-The metadata for each replicated patient is extracted. The 'geo accession' and 'identifer' is collapsed, meaning that the new "geo accession" and 'identifer' for the replicated patient is a combination of the originals.
-
-Furthermore, a new column called 'modified' is added to the metadata. The column describes if the patient has been modified (eg. the gene expression represent a mean of multiple gene expressions for one patient).
+The metadata for each replicated patient is extracted. The 'geo accession' and 'identifer' is collapsed, meaning that the new 'geo accession' and 'identifer' for the replicated patient is a combination of the originals.
 
 ```{r}
 #| label: Extraxt and collapse meta data for replicates
@@ -212,19 +209,30 @@ cols_rep_meta_collapesed <- dat_rep |>
   group_by(patient_n) |> 
   summarise(geo_accession = str_c(geo_accession, collapse = "_"),
             identifier = str_c(identifier, collapse = "_"))
+```
 
+A new column called 'modified' is added to the meta data. The column describes if the patient has been modified (eg. the gene expression represent a mean of multiple gene expressions for one patient).
+
+```{r}
+#| label: Add column modified
 cols_rep_meta <- dat_rep |>
   select(patient_n, gender, disease_state, date) |> 
   distinct() |> 
   add_column(cols_rep_meta_collapesed |> select(geo_accession, identifier),
              modified = 1)
+
+cols_rep_meta
+
+dat_clean <- dat_clean |>
+  add_column(modified = 0)
 ```
+
 
 Combine the new meta data with the mean gene expression for the each replicated patient.
 
 ```{r}
 #| label: Combine mean expression and meta data for replicates
-dat_rep_meta <- inner_join(x = cols_rep_meta, 
+dat_rep_clean <- inner_join(x = cols_rep_meta, 
                           y = dat_rep_mean,
                           by = "patient_n")
 ```
@@ -235,10 +243,11 @@ As the patient_n variable is no longer informative, this column is removed for a
 
 ```{r}
 #| label: Add rep data with non-rep data
-dat_clean <- bind_rows(dat_clean, dat_rep_meta) |>
+dat_clean <- bind_rows(dat_clean, dat_rep_clean) |>
+  relocate(modified, .after = date) |>
   filter(!str_detect(patient_n, "_")) |>  
   dplyr::select(-patient_n) |> 
-  arrange(disease_state)
+  arrange(disease_state) 
 
 dat_clean |> 
   sample_n(10)
