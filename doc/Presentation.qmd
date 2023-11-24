@@ -41,17 +41,19 @@ Linear regression
 
 ## Results
 PCA
-![](../results/scatter_pc1_pc2.png){.absolute top="250" left="0" width="350" height="300"}
-![](../results/var_explained.png){.absolute top="250" left="0" width="350" height="300"}
+![](../results/scatter_pc1_pc2.png){.absolute top="100" left="250" width="600" height="550"}
+
+## Results
+![](../results/var_explained.png){.absolute top="100" left="250" width="600" height="550"}
 
 ## Results
 Linear regression
 Forest plot
-![](../results/forest_plot.png){.absolute top="250" left="0" width="350" height="300"}
+![](../results/forest_plot.png){.absolute top="100" left="250" width="600" height="550"}
 
 ## Results
 Volcano plot
-![](../results/volcano_plot.png){.absolute top="250" left="0" width="350" height="300"}
+![](../results/volcano_plot.png){.absolute top="100" left="250" width="600" height="550"}
 
 ## Discussion
 Compare significant genes with the genes found in the article
