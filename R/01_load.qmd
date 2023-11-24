@@ -14,11 +14,7 @@ Dawany N, Showe LC, Kossenkov AV, Chang C et al. Identification of a 251 gene ex
 
 The data comes from total RNA isolated from peripheral blood mononuclear cell (PBMC) from a South African cohort. Microarry analysis was performed to compare gene expression in patients either infected with HIV or co-infected with HIV/TB. Diagnosis of TB, especially in the presence of an HIV co-infection, can be challenging when using conventional diagnostic methods. Therefore, the data was used to identify a TB-specific gene signature.
 
-## Load Data
-
-This document will load the data from Gene Expression Omnibus. Furthermore, the file will export the data to a tsv-file.
-
-### Setup
+## Setup
 
 Loading required packages.
 
@@ -26,32 +22,28 @@ Loading required packages.
 #| label: Load packages
 #| message: false
 library("tidyverse")
-library("dplyr")
 library("stringr")
 library("GEOquery")
 ```
 
 Note: Instruction of how to install the package GEOquery can be found here *https://bioconductor.org/packages/release/bioc/html/GEOquery.html*
 
-### Load Data
+## Load Data
 
-In the following, the data directory is defined along with the location of the original data.
+This document will load the data from Gene Expression Omnibus. Furthermore, the file will export the data to a tsv-file. In the following, the data directory is defined along with the location of the original data.
 
 ```{r}
 #| label: Set up
 dest_dir <- "../data/"
-raw_dir <- "../data/_raw/"
-#raw_dir <- str_c(dest_dir, "_raw/")
+raw_dir <- str_c(dest_dir, "_raw/")
 expr_file <- "GSE50834_non-normalized.txt.gz"
 meta_file <- "GSE50834_series_matrix.txt.gz"
 geo <- "GSE50834"
 
-# Create data folder if not already existing
 if( !dir.exists(raw_dir) ){
   dir.create(path = raw_dir,
              recursive = TRUE)
 }
-
 ```
 
 The gene expression data, containing patient-ID's and gene expression, is downloaded and stored in raw-data directory using the GEOquery library. GEOquery can download datas ets from the NCBI Gene Expression Omnibus (GEO), using a unique accession number.
@@ -79,13 +71,9 @@ The meta data, containing patient-ID's patient information, is downloaded and st
 #| message: false
 if (!file.exists(str_c(raw_dir, meta_file))){
   dat_meta <- getGEO(GEO = geo)
-  
   dat_meta <- pData(phenoData(dat_meta[[1]]))
-  
   write.table(dat_meta, file = str_c(raw_dir, meta_file), 
              sep = "\t")
-  #write.table(dat_meta_new, file = str_c(raw_dir, meta_file), 
-  #           sep = "\t")
   dat_meta <- read.table(str_c(raw_dir, meta_file), 
                         sep = "\t",
                         header = TRUE)
@@ -94,7 +82,6 @@ if (!file.exists(str_c(raw_dir, meta_file))){
                           sep = "\t",
                           header = TRUE)
 }
-
 ```
 
 ## Write Data to Files
@@ -103,7 +90,6 @@ The gene expression data and the meta data are saved as .tsv-files
 
 ```{r}
 #| label: Write tsv-files
-
 dat_expr |> 
   write_tsv(file = str_c(dest_dir, "01_dat_load_expr.tsv"))
 
