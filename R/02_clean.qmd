@@ -12,7 +12,6 @@ Load required packages.
 #| label: Load packages
 #| message: false
 library("tidyverse")
-library("dplyr")
 ```
 
 Load gene expression and meta data.
