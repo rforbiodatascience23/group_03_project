@@ -9,7 +9,7 @@ editor: visual
 Loading required packages
 
 ```{r}
-#| label: Load packages
+#| label: 03_Load packages
 #| message: false
 library("tidyverse")
 library("table1")
@@ -18,7 +18,7 @@ library("table1")
 Loading the cleaned data.
 
 ```{r}
-#| label: Load data
+#| label: 03_Load data
 #| message: false
 dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 ```
@@ -28,7 +28,7 @@ dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 Create a bar plot to illustrate the number of males and females for each patient group.
 
 ```{r}
-#| label: Define settings for plot
+#| label: 03_Define settings for plot
 female_sign = intToUtf8(9792)
 male_sign = intToUtf8(9794)
 sign_size = 10
@@ -36,7 +36,7 @@ bar_width = 0.75
 ```
 
 ```{r}
-#| label: Bar plot
+#| label: 03_Bar plot
 groups <- dat_clean |> 
   group_by(gender,
            disease_state) |> 
@@ -83,7 +83,7 @@ show(barplot_patient_group)
 The distribution of males and females for each patient group can also be summarized in a table.
 
 ```{r}
-#| label: Summary table
+#| label: 03_Summary table
 summary_table <- dat_clean |>
   mutate(Gender = factor(gender),
          Disease = factor(disease_state)) |> 
