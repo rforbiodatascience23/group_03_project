@@ -4,12 +4,14 @@ format: html
 editor: visual
 ---
 
+# 06 ANALYSIS 2
+
 ## Setup
 
 Loading required packages.
 
 ```{r}
-#| label: 06_ Load packages
+#| label: 06_Load packages
 #| message: false
 library('tidyverse')
 library('broom')
@@ -20,7 +22,7 @@ library("illuminaHumanv4.db")
 Load the augment data.
 
 ```{r}
-#| label: 06_ Load data
+#| label: 06_Load data
 #| message: false
 dat_aug <- read_tsv(file = "../data/04_dat_aug.tsv")
 ```
@@ -30,7 +32,8 @@ dat_aug <- read_tsv(file = "../data/04_dat_aug.tsv")
 In the following a linear regression model is mapped to the data. In order to do so, the data need to be pivoted to long format and grouped by genes. Gene expression levels and disease label are nested pr. gene.
 
 ```{r}
-#| label: 06_ Pivot and nest data
+
+#| label: 06_Pivot and nest data
 dat_nest <- dat_aug |>
   pivot_longer(cols = matches("^ILMN_[0-9]+"),
                names_to = "gene", 
@@ -44,7 +47,7 @@ dat_nest
 A linar regression model is mapped to the nested data of each gene.
 
 ```{r}
-#| label: 06_ Linear regression model 
+#| label: 06_Linear regression model 
 dat_nest <- dat_nest |>
   mutate(model_object = map(.x = data,
                    .f = ~lm(formula = log2_expr_level ~ disease_state,
@@ -54,7 +57,8 @@ dat_nest <- dat_nest |>
 Tidy statistics are mapped to the model of each gene and saved in 'tidy_model_object'.
 
 ```{r}
-#| label: 06_ Apply tidy to model objects
+
+#| label: 06_Apply tidy to model objects
 dat_nest <- dat_nest |>
   mutate(tidy_model_object = map(.x = model_object,
                    .f = ~tidy(conf.int = TRUE,
@@ -67,7 +71,7 @@ dat_nest <- dat_nest |>
 The tidy model objects are unnested, only slope estimates are kept for each gene and selected together with p-values and CI values. Lastly, the data is being ungrouped.
 
 ```{r}
-#| label: 06_ Unnest and ungroup data
+#| label: 06_Unnest and ungroup data
 dat_estimates <- dat_nest |> 
   unnest(tidy_model_object) |> 
   filter(term != "(Intercept)") |> 
@@ -78,7 +82,7 @@ dat_estimates <- dat_nest |>
 An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05% significance level and a "most_sign varible with the 20 most significant genes.
 
 ```{r}
-#| label: 06_ Adjusted p-value and significant label
+#| label: 06_Adjusted p-value and significant label
 dat_estimates <- dat_estimates |>
   mutate(p_val_adjust = p.adjust(p.value),
          significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No")) |> 
@@ -96,7 +100,8 @@ dat_estimates |>
 A forest plot is generated showing the genes that are significantly up- or down-regulated in tuberculosis patients (TB).
 
 ```{r}
-#| label: 06_ Forrest plot
+
+#| label: 06_Forrest plot
 dat_forest_plot <- dat_estimates |> 
   filter(significant == "Yes") 
 
@@ -117,7 +122,7 @@ ggsave("../results/forest_plot.png",plot = forest_plot)
 A volcano plot is generated to show significance of the genes as a function of the gene expression estimates.
 
 ```{r}
-#| label: 06_volcano plot
+#| label: 06_Vulcano plot
 
 dat_volcano_plot <- dat_estimates |> 
   mutate(gene_labels = case_when(p_val_adjust <= 0.05 ~ gene, TRUE ~""))
@@ -126,10 +131,7 @@ volcano_plot <- ggplot(data=dat_volcano_plot, aes(x=estimate,
                                    y=-log10(p.value), 
                                    color = significant,
                                    label = gene_labels)) +
-  geom_point(alpha = 0.7) +
-  scale_color_manual(
-    values = c("Yes" = "orange", 
-               "No" = "gray") ) +
+  geom_point(alpha = 0.5) +
   labs(
     x = "Estimates (95% CIs)",
     y = "-log10(p)",
