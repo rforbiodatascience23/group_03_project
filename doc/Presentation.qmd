@@ -29,6 +29,7 @@ Handle replications
 Discriptive analysis
 
 ![](../results/barplot_patient_group.png){.absolute top="250" left="100" width="500" height="450"}
+
 ## Methods
 Normalization
 Log2
