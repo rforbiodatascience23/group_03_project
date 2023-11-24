@@ -79,8 +79,8 @@ var_explained <- ggplot(pca_fit_eigen,
        mapping = aes(x = PC, y = percent)) +
   geom_col(fill = "royalblue") +
   geom_smooth(mapping = aes(x = PC, y = cumulative), method = "loess", formula = y ~ x, color = "royalblue") +
-  geom_hline(yintercept = 0.95) +
-  annotate("text", x=10, y=0.93, label="95% variance explained") +
+  geom_hline(yintercept = 0.90) +
+  annotate("text", x=10, y=0.88, label="90% variance explained") +
   scale_y_continuous(
     labels = scales::percent_format(),
     expand = expansion(mult = c(0, 0.01))
@@ -91,6 +91,7 @@ var_explained <- ggplot(pca_fit_eigen,
   theme_minimal()
 ggsave("../results/var_explained.png", plot = var_explained)
 show(var_explained)
+
 ```
 
 From the variance explained plot it is seen, that 35 PCs are required to explain 95% of the variance in the data.
