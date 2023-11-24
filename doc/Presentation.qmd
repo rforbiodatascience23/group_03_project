@@ -1,15 +1,18 @@
 ---
 title: "Gene expression analysis of M. tuberculosis in patients with and without HIV co-infection"
 format:
-  revealjs: 
-    theme: simple
+  revealjs:
+      embed-resources: true
+      theme: simple
 editor: visual
 author: "Group 3: Anne Skov-Pedersen s184330, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
 ---
 
 ## Introduction
 
-![](../results/test_image.jpg){.absolute top="250" left="0" width="350" height="300"}
+Co-infection with tuberculosis (TB) is the leading cause of death in HIV-infected individuals. However, diagnosis of TB, especially in the presence of an HIV co-infection, can be limiting due to the high inaccuracy associated with the use of conventional diagnostic methods. Here we report a gene signature that can identify a tuberculosis infection in patients co-infected with HIV as well as in the absence of HIV.
+
+![](../results/test_image.jpg){.absolute top="250" left="0" width="350" height="300"} ![](Original_paper.png){.absolute top="250" left="100" width="350" height="100"}
 
 ## Methods
 
