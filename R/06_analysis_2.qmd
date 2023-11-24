@@ -126,7 +126,10 @@ vulcano_plot <- ggplot(data=dat_vulcano_plot, aes(x=estimate,
                                    y=-log10(p.value), 
                                    color = significant,
                                    label = gene_labels)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.7) +
+  scale_color_manual(
+    values = c("Yes" = "orange", 
+               "No" = "gray") ) +
   labs(
     x = "Estimates (95% CIs)",
     y = "-log10(p)",
