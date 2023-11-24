@@ -227,7 +227,6 @@ dat_clean <- dat_clean |>
   add_column(modified = 0)
 ```
 
-
 Combine the new meta data with the mean gene expression for the each replicated patient.
 
 ```{r}
