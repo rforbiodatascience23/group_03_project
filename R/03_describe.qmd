@@ -28,31 +28,30 @@ dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 Create a bar plot to illustrate the number of males and females for each patient group.
 
 ```{r}
-#| label: Bar plot
-# Define settings for the plot
+#| label: Define settings for plot
 female_sign = intToUtf8(9792)
 male_sign = intToUtf8(9794)
 sign_size = 10
 bar_width = 0.75
+```
 
-# Compute the numbers of females and males within each patient group 
-# (used for plotting venus and mars sign)
+```{r}
+#| label: Bar plot
 groups <- dat_clean |> 
   group_by(gender,
            disease_state) |> 
   summarize(n = n())
 
-# Plot the results
-barplot_patient_group <- ggplot(data = dat_clean,
-                                mapping = aes(x = disease_state,
-                                              fill = disease_state,
-                                              alpha = gender)) +
+barplot_patient_group <- 
+  ggplot(data = dat_clean,
+        mapping = aes(x = disease_state,
+                      fill = disease_state,
+                      alpha = gender)) +
   geom_bar(width = bar_width,
            position = "dodge") +
   scale_fill_manual(
     values = c("HIV" = "royalblue", 
-               "HIV/TB" = "tomato")
-  ) +
+               "HIV/TB" = "tomato") ) +
   scale_alpha_manual(values = c("Male" = 0.6,
                                 "Female" = 0.9)) +
   annotate("text", 
@@ -91,4 +90,4 @@ summary_table <- dat_clean |>
   table1(x = formula(~ Gender | Disease))
 show(summary_table)
 ```
-
+From the above it is seen, that the gender of the HIV/TB co-infected patients is close to equal distributed between male and female. and that the gender of the HIV mono-infected is equal distributed with 72% females and only 27% males. 

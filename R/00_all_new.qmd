@@ -4,12 +4,11 @@ format: html
 editor: visual
 ---
 
-## 
-
 ```{r}
-library(quarto)
-quarto_render(input = "R/01_load.qmd")
+quarto_render()
+
 ```
 
 
-{{< include 01_load.qmd >}} 
+
+

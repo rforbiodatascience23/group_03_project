@@ -4,12 +4,71 @@ format: html
 editor: visual
 ---
 
-## Run analysis
+```{r}
+library(quarto)
+#| message: false
+```
+
+## Render individual documents
+
+A folderis created for each render document..?
+```{r}
+quarto_render(input = "01_load.qmd")
+file.rename(from = "01_load.html",
+            to = "../results/01_load.html")
+```
+
+```{r}
+quarto_render(input = "02_clean.qmd")
+file.rename(from = "02_clean.html",
+            to = "../results/02_clean.html")
+```
+
+```{r}
+quarto_render(input = "03_describe.qmd")
+file.rename(from = "03_describe.html",
+            to = "../results/03_describe.html")
+```
+
+```{r}
+quarto_render(input = "04_augment.qmd")
+file.rename(from = "04_augment.html",
+            to = "../results/04_augment.html")
+```
+
+```{r}
+quarto_render(input = "05_analysis_1.qmd")
+file.rename(from = "05_analysis_1.html",
+            to = "../results/05_analysis_1.html")
+```
+
+```{r}
+quarto_render(input = "06_analysis_2.qmd")
+file.rename(from = "06_analysis_2.html",
+            to = "../results/06_analysis_2.html")
+```
+
+```{r}
+quatro_render()
+```
+
+
+## Run full analysis to create one html file
 
 {{< include 01_load.qmd >}}
 
 {{< include 02_clean.qmd >}}
 
-#{{< include 03_describe.qmd >}}
+{{< include 03_describe.qmd >}}
 
-#{{< include 05_analysis.qmd >}}
+{{< include 04_augment.qmd >}}
+
+{{< include 05_analysis_1.qmd >}}
+
+{{< include 06_analysis_2.qmd >}}
+
+Consider if we want to rename the final html file to something else??
+```{r}
+file.rename(from = "00_all.html",
+            to = "../results/00_all.html")
+```
