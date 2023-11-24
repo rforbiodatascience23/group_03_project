@@ -61,6 +61,7 @@ scatter_pc1_pc2 <- ggplot(pca_fit_aug,
 ggsave("../results/scatter_pc1_pc2.png", plot = scatter_pc1_pc2)
 show(scatter_pc1_pc2)
 ```
+From above it is seen, that PC1 to some extend is able to distinguis between HIV/TB co-infected and HIV mono-infected patients, while PC2 show no prominent pattern related to infection or gender.
 
 ### Plot the Variance Explained
 
@@ -88,3 +89,4 @@ var_explained <- ggplot(pca_fit_eigen,
 ggsave("../results/var_explained.png", plot = var_explained)
 show(var_explained)
 ```
+From the variance explained plot it is seen, that 35 PCs are required to explain 95% of the variance in the data. 
