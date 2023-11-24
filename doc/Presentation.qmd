@@ -9,20 +9,17 @@ author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper, Helene B. L. Pe
 ---
 
 ## Introduction
+
+Hej
 Co-infection with tuberculosis (TB) is the leading cause of death in HIV-infected individuals.
 
-![](TB.jpg){.absolute top="250" left="500" width="350" height="300"} 
+![](TB.jpg){.absolute top="250" left="500" width="350" height="300"}
 
 ## Introduction
 
 ![](original_paper.png){.absolute top="100" left="0" width="350" height="550"}
 
-Purpose of data collection
-Data origin
-Data handling
-Remove irrelevant variables
-Change ugly variables
-Handle replications
+Purpose of data collection Data origin Data handling Remove irrelevant variables Change ugly variables Handle replications
 
 ## Methods
 
@@ -31,28 +28,25 @@ Discriptive analysis
 ![](../results/barplot_patient_group.png){.absolute top="250" left="100" width="500" height="450"}
 
 ## Methods
-Normalization
-Log2
+
+Normalization Log2
 
 ## Methods
-Analysis
-PCA
-Linear regression
+
+Analysis PCA Linear regression
 
 ## Results
-PCA
-![](../results/scatter_pc1_pc2.png){.absolute top="250" left="0" width="350" height="300"}
-![](../results/var_explained.png){.absolute top="250" left="0" width="350" height="300"}
+
+PCA ![](../results/scatter_pc1_pc2.png){.absolute top="250" left="0" width="350" height="300"} ![](../results/var_explained.png){.absolute top="250" left="0" width="350" height="300"}
 
 ## Results
-Linear regression
-Forest plot
-![](../results/forest_plot.png){.absolute top="250" left="0" width="350" height="300"}
+
+Linear regression Forest plot ![](../results/forest_plot.png){.absolute top="250" left="0" width="350" height="300"}
 
 ## Results
-Volcano plot
-![](../results/volcano_plot.png){.absolute top="250" left="0" width="350" height="300"}
+
+Volcano plot ![](../results/volcano_plot.png){.absolute top="250" left="0" width="350" height="300"}
 
 ## Discussion
-Compare significant genes with the genes found in the article
 
+Compare significant genes with the genes found in the article
