@@ -13,11 +13,40 @@ author: "Group 3: Anne Skov-Pedersen s184330, Dea F. Skipper, Helene B. L. Peter
 Co-infection with tuberculosis (TB) is the leading cause of death in HIV-infected individuals. However, diagnosis of TB, especially in the presence of an HIV co-infection, can be limiting due to the high inaccuracy associated with the use of conventional diagnostic methods. Here we report a gene signature that can identify a tuberculosis infection in patients co-infected with HIV as well as in the absence of HIV.
 
 ![](../results/test_image.jpg){.absolute top="250" left="0" width="350" height="300"} ![](Original_paper.png){.absolute top="250" left="100" width="350" height="100"}
+## Introduction
+Purpose of data collection
+Data origin
+Data handling
+-	Remove irrelevant variables
+-	Change ugly variables
+-	Handle replications
+
 
 ## Methods
 
+Gender plots
+![](../results/barplot_patient_group.png){.absolute top="250" left="0" width="350" height="300"}
+## Methods
+Normalization
+Log2
+
+## Methods
+Analysis
+- PCA
+- Linear regression
+
 ## Results
+PCA
+![](../results/scatter_pc1_pc2.png){.absolute top="250" left="0" width="350" height="300"}
+![](../results/var_explained.png){.absolute top="250" left="0" width="350" height="300"}
+## Results
+Linear regression
+Forest plot
+![](../results/forest_plot.png){.absolute top="250" left="0" width="350" height="300"}
+## Results
+Volcano plot
+![](../results/volcano_plot.png){.absolute top="250" left="0" width="350" height="300"}
 
 ## Discussion
+Compare significant genes with the genes found in the article
 
-## Conclusion
