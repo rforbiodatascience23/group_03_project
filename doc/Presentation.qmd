@@ -11,7 +11,7 @@ author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper, Helene B. L. Pe
 ## Introduction
 Co-infection with tuberculosis (TB) is the leading cause of death in HIV-infected individuals.
 
-![](TB.jpg){.absolute top="250" left="500" width="350" height="300"} 
+![](TB-HIV.png){.absolute top="250" left="500" width="450" height="300"} 
 
 ## Introduction
 
@@ -28,7 +28,8 @@ Handle replications
 
 Discriptive analysis
 
-![](../results/barplot_patient_group.png){.absolute top="250" left="100" width="500" height="450"}
+![](../results/barplot_patient_group.png){.absolute top="100" left="450" width="600" height="550"}
+
 ## Methods
 Normalization
 Log2
