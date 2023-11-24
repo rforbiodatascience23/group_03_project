@@ -13,7 +13,6 @@ Loading required packages
 #| message: false
 library("tidyverse")
 library("table1")
-library("webshot")
 ```
 
 Loading the cleaned data.
