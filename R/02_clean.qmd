@@ -210,8 +210,8 @@ Furthermore, a new column called 'modified' is added to the metadata. The column
 #| label: Extraxt and collapse meta data for replicates
 cols_rep_meta_collapesed <- dat_rep |>
   group_by(patient_n) |> 
-  summarise(geo_accession = paste0(geo_accession, collapse = "_"),
-            identifier = paste0(identifier, collapse = "_"))
+  summarise(geo_accession = str_c(geo_accession, collapse = "_"),
+            identifier = str_c(identifier, collapse = "_"))
 
 cols_rep_meta <- dat_rep |>
   select(patient_n, gender, disease_state, date) |> 
