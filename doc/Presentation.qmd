@@ -8,54 +8,53 @@ editor: visual
 author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
 ---
 
-## Introduction
+## Introduction {.smaller}
+
 Co-infection with tuberculosis (TB) is the leading cause of death in HIV-infected individuals.
 
-![](TB-HIV.png){.absolute top="250" left="500" width="450" height="300"} 
+![](TB-HIV.png){.absolute top="250" left="500" width="450" height="300"}
 
-## Introduction
+## Introduction {.smaller}
 
-Data origin
-![](original_paper.png){.absolute top="100" left="0" width="350" height="550"}
+Data origin ![](original_paper.png){.absolute top="100" left="0" width="350" height="550"}
 
 Purpose of data collection
 
-Data handling
-Remove irrelevant variables
-Change ugly variables
-Handle replications
+Data handling Remove irrelevant variables Change ugly variables Handle replications
 
-## Methods
+## Methods {.smaller}
 
 Discriptive analysis
 
 ![](../results/barplot_patient_group.png){.absolute top="100" left="450" width="600" height="550"}
 
-## Methods
-Normalization
-Log2
+## Methods {.smaller}
 
-## Methods
-Analysis
-PCA
-Linear regression
+Normalization Log2
 
-## Results
-PCA
-![](../results/scatter_pc1_pc2.png){.absolute top="100" left="250" width="600" height="550"}
+## Methods {.smaller}
 
-## Results
-![](../results/var_explained.png){.absolute top="100" left="250" width="600" height="550"}
+Analysis PCA Linear regression
 
-## Results
-Linear regression
-Forest plot
-![](../results/forest_plot.png){.absolute top="100" left="250" width="600" height="550"}
+## Results - PCA {.smaller}
 
-## Results
-Volcano plot
-![](../results/volcano_plot.png){.absolute top="100" left="250" width="600" height="550"}
+-   First PC explains 15% of the variance
 
-## Discussion
-Compare significant genes with the genes found in the article
+-   31 PCs needed to explain 90% of variance
 
+![](../results/var_explained.png){.absolute top="100" left="550" width="600" height="550"}
+
+## Results - PCA {.smaller}
+
+-   Slight partition of disease state on PC1
+-   No clear partition of gender
+
+![](../results/scatter_pc1_pc2.png){.absolute top="100" left="550" width="600" height="550"}
+
+## Results - Linear Regression {.smaller}
+
+Forest plot ![](../results/forest_plot.png){.absolute top="100" left="250" width="600" height="550"}
+
+## Results - Linear Regression {.smaller}
+
+Volcano plot ![](../results/volcano_plot.png){.absolute top="100" left="250" width="600" height="550"}
