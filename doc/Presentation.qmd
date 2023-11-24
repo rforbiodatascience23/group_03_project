@@ -5,7 +5,7 @@ format:
       embed-resources: true
       theme: simple
 editor: visual
-author: "Group 3: Anne Skov-Pedersen s184330, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
+author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
 ---
 
 ## Introduction
@@ -18,9 +18,9 @@ Co-infection with tuberculosis (TB) is the leading cause of death in HIV-infecte
 Purpose of data collection
 Data origin
 Data handling
--	Remove irrelevant variables
--	Change ugly variables
--	Handle replications
+Remove irrelevant variables
+Change ugly variables
+Handle replications
 
 ![](../results/test_image.jpg){.absolute top="250" left="0" width="350" height="300"}
 ![](Original_paper.png){.absolute top="250" left="100" width="350" height="100"}
@@ -36,8 +36,8 @@ Log2
 
 ## Methods
 Analysis
-- PCA
-- Linear regression
+PCA
+Linear regression
 
 ## Results
 PCA
