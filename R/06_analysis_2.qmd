@@ -61,6 +61,7 @@ dat_nest <- dat_nest |>
                               conf.level = 0.95,
                               x = .x)))
 
+
 ```
 
 The tidy model objects are unnested, only slope estimates are kept for each gene and selected together with p-values and CI values. Lastly, the data is being ungrouped.
@@ -74,24 +75,28 @@ dat_estimates <- dat_nest |>
   ungroup()
 ```
 
-An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05% significance level.
+An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05% significance level and a "most_sign varible with the 20 most significant genes.
 
 ```{r}
 #| label: Adjusted p-value and significant label
-dat_estimates <- dat_estimates |> 
+dat_estimates <- dat_estimates |>
   mutate(p_val_adjust = p.adjust(p.value),
-         #significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No")) 
-         significant = case_when(p.value <= 0.3 ~ "Yes", TRUE ~"No")) 
+         significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No")) |> 
+  arrange(p_val_adjust) |>
+         mutate(most_sign = case_when(
+           p_val_adjust < nth(p_val_adjust, 20) ~ "Yes", TRUE ~"No")) 
+
+
+dat_estimates |> 
+  filter(most_sign == "Yes")
 ```
 
 ### Forest Plot
 
-A forest plot is generated showing the genes that are significantly up- or downregulated in tuberculosis patients (TB).
+A forest plot is generated showing the genes that are significantly up- or down-regulated in tuberculosis patients (TB).
 
 ```{r}
 #| label: Forrest plot
-# - genes are reordered according to estimate
-#retrieve significant genes
 dat_forest_plot <- dat_estimates |> 
   filter(significant == "Yes") 
 
@@ -103,29 +108,27 @@ forest_plot <- ggplot(data=dat_forest_plot, aes(x=estimate, y=fct_reorder(gene, 
   ) +
   theme_minimal()
 
-#OBS. Change when we change the wd
 ggsave("../results/forest_plot.png",plot = forest_plot) 
 
 ```
 
 ### Vulcano Plot
 
-A vulcano plot is generated to show ...
+A vulcano plot is generated to show significance of the genes as a function of the gene expression estimates.
 
 ```{r}
 #| label: Vulcano plot
-# add gene_label for plotting
 
 dat_vulcano_plot <- dat_estimates |> 
   mutate(gene_labels = case_when(p_val_adjust <= 0.05 ~ gene, TRUE ~""))
 
 vulcano_plot <- ggplot(data=dat_vulcano_plot, aes(x=estimate,
                                    y=-log10(p.value), 
-                                   color = gene_labels,
+                                   color = significant,
                                    label = gene_labels)) +
   geom_point(alpha = 0.5) +
   labs(
-    x = "Estimates (95%CIs)",
+    x = "Estimates (95% CIs)",
     y = "-log10(p)",
     title = "Genes Associated with Tuberculosis",
     subtitle = "Genes highlighted in turquoise were significant after multiple testing correction"
@@ -133,11 +136,11 @@ vulcano_plot <- ggplot(data=dat_vulcano_plot, aes(x=estimate,
   theme_minimal() +
   geom_text_repel(size = 2, max.overlaps = 20) +
   theme(legend.position = "none",
-        plot.title = element_text(hjust = 0),  # Align main title to the left
-        plot.subtitle = element_text(hjust = 0)  # Align subtitle to the left
+        plot.title = element_text(hjust = 0),  
+        plot.subtitle = element_text(hjust = 0)  
   )
 
-#OBS. Change when we change the wd
+
 ggsave("../results/vulcano_plot.png",plot = vulcano_plot)  
 
 ```
