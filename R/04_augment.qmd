@@ -4,12 +4,14 @@ format: html
 editor: visual
 ---
 
+# 04 AUGMENT
+
 ## Setup
 
 Loading required packages.
 
 ```{r}
-#| label: Load packages
+#| label: 04_Load packages
 #| message: false
 library("tidyverse")
 library("preprocessCore")
@@ -18,7 +20,7 @@ library("preprocessCore")
 Load the clean data.
 
 ```{r}
-#| label: Load data
+#| label: 04_Load data
 #| message: false
 dat_clean <- read_tsv(file = "../data/02_dat_clean.tsv")
 ```
@@ -26,7 +28,7 @@ dat_clean <- read_tsv(file = "../data/02_dat_clean.tsv")
 In the following the gene expression data will be normalized and log2 transformed. In order to do so the clean data is split into gene expression data and meta data.
 
 ```{r}
-#| label: Split data
+#| label: 04_Split data
 dat_expr <- dat_clean |> 
   select(starts_with("ILMN")) 
   
@@ -49,7 +51,7 @@ The gene expression levels in the cleaned data are normalized by quantile normal
 4.  Rearranging the genes for each patient to obtain the original order.
 
 ```{r}
-#| label: Normalise dat_expr
+#| label: 04_Normalise dat_expr
 dat_expr_matrix <- as.matrix(t(dat_expr)) 
 colnames(dat_expr_matrix) <- dat_meta$identifier 
 dat_expr_matrix <- normalize.quantiles(dat_expr_matrix, 
@@ -62,13 +64,13 @@ dat_expr <- as_tibble(t(dat_expr_matrix), rownames = NA)
 In the following the gene expression data is log2 transformed. This method is commonly used for microarray data. The goal is to stabilizes the data variance of high intensities but increases the variance at low intensities.
 
 ```{r}
-#| label: Log-transformation
+#| label: 04_Log-transformation
 dat_expr <- dat_expr |> 
   rownames_to_column(var = "identifier") |> 
   mutate(across(starts_with("ILMN"), log2))
 ```
 
-The normalised and log2 transformed gene expression data and the meta-data are combined. 
+The normalised and log2 transformed gene expression data and the meta-data are combined.
 
 ```{r}
 dat_aug <- inner_join(x = dat_meta,
@@ -81,7 +83,7 @@ dat_aug <- inner_join(x = dat_meta,
 The data is saved as .tsv-files.
 
 ```{r}
-#| label: Write tsv-files
+#| label: 04_Write tsv-files
 dat_aug |> 
   write_tsv(file = "../data/04_dat_aug.tsv")
 ```
