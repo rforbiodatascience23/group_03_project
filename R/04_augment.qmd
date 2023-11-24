@@ -11,8 +11,8 @@ Loading required packages.
 ```{r}
 #| label: Load packages
 #| message: false
-library("dplyr")
-library(preprocessCore)
+library("tidyverse")
+library("preprocessCore")
 ```
 
 Load the clean data.
@@ -23,53 +23,71 @@ Load the clean data.
 dat_clean <- read_tsv(file = "../data/02_dat_clean.tsv")
 ```
 
-In the following the gene expression data will be normalised and log2 transformed. In order to do so the clean data is split into gene expression data and meta data.
+In the following the gene expression data will be normalized and log2 transformed. In order to do so the clean data is split into gene expression data and meta data.
+
 ```{r}
 #| label: Split data
 dat_expr <- dat_clean |> 
   select(starts_with("ILMN")) 
   
 dat_meta <- dat_clean |> 
-  select(-starts_with("ILMN"))
+  select(!starts_with("ILMN"))
 ```
-
 
 ## Normalization
 
-The gene expression levels in the cleaned data are normalized by quantile normalization. This ensures that expression levels can be compared between different genes.
+The purpose of normalization to minimize technical variability such that the remaining variation can be explained by biological differences. Technical variation can occur because of preparation differences or differences in the production of the microarrays and the processing of the arrays (for instance scanner differences). A general strategy is to re-distribute signal intensities across all samples such that they now all have the same distribution in order to compare the data from multiple samples.
+
+The gene expression levels in the cleaned data are normalized by quantile normalization implemented in the function `r normalize.quantiles()`. This ensures that expression levels can be compared between patients in the data set. The algorithm is as follows:
+
+1.  Sort the the expression levels for each patient.
+
+2.  Calculate the mean expression level of the genes within the same rank.
+
+3.  Assign this mean to each gene within this rank.
+
+4.  Rearranging the genes for each patient to obtain the original order.
 
 ```{r}
 #| label: Normalise dat_expr
-dat_expr <- normalize.quantiles(as.matrix(t(dat_expr)), keep.names = TRUE)
+dat_expr_matrix <- as.matrix(t(dat_expr)) 
+colnames(dat_expr_matrix) <- dat_meta$identifier 
+dat_expr_matrix <- normalize.quantiles(dat_expr_matrix, 
+                                keep.names = TRUE) 
+dat_expr <- as_tibble(t(dat_expr_matrix), rownames = NA)
 ```
-
 
 ## Log Transformation
 
-In the following the gene expression data is log2 transformed.
+In the following the gene expression data is log2 transformed. This method is commonly used for microarray data. The goal is to stabilizes the data variance of high intensities but increases the variance at low intensities.
 
 ```{r}
-#| label: log-transformation
-dat_expr <- as_tibble(log2(t(dat_expr)))
+#| label: Log-transformation
+dat_expr <- dat_expr |> 
+  rownames_to_column(var = "identifier") |> 
+  mutate(across(starts_with("ILMN"), log2))
+```
+
+The normalised and log2 transformed gene expression data and the meta-data are combined. 
+
+```{r}
+dat_aug <- inner_join(x = dat_meta,
+                      y = dat_expr,
+                      by = "identifier")
 ```
 
 ## Write Data to Files
 
-The normalised and log2 transformed gene expression data and the meta-data are combined and saved as .tsv-files
-
-```{r}
-dat_aug <- bind_cols(dat_meta, dat_expr)
-```
+The data is saved as .tsv-files.
 
 ```{r}
 #| label: Write tsv-files
 dat_aug |> 
   write_tsv(file = "../data/04_dat_aug.tsv")
-
 ```
 
-
 This was just a way to briefly see the effect and is not expected to be included in the final code:
+
 ```{r}
 dat_clean |> 
   pivot_longer(cols = starts_with("ILMN"),
@@ -83,7 +101,7 @@ dat_clean |>
 ```
 
 ```{r}
-norm_data |> 
+dat_expr |> 
   pivot_longer(cols = starts_with("ILMN"),
                names_to = "gene_id",
                values_to = "expression") |> 
@@ -92,4 +110,3 @@ norm_data |>
   geom_boxplot() +
   theme_minimal()
 ```
-
