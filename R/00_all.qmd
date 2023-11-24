@@ -12,6 +12,7 @@ library(quarto)
 ## Render individual documents
 
 A folderis created for each render document..?
+
 ```{r}
 quarto_render(input = "01_load.qmd")
 file.rename(from = "01_load.html",
@@ -48,11 +49,6 @@ file.rename(from = "06_analysis_2.html",
             to = "../results/06_analysis_2.html")
 ```
 
-```{r}
-quatro_render()
-```
-
-
 ## Run full analysis to create one html file
 
 {{< include 01_load.qmd >}}
@@ -68,7 +64,3 @@ quatro_render()
 {{< include 06_analysis_2.qmd >}}
 
 Consider if we want to rename the final html file to something else??
-```{r}
-file.rename(from = "00_all.html",
-            to = "../results/00_all.html")
-```
