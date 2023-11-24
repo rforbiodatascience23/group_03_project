@@ -90,25 +90,59 @@ dat_aug |>
 
 This was just a way to briefly see the effect and is not expected to be included in the final code:
 
-```{r}
-dat_clean |> 
-  pivot_longer(cols = starts_with("ILMN"),
-               names_to = "gene_id",
-               values_to = "expression") |> 
-  mutate(logtrans = log2(expression)) |> 
-  ggplot(mapping = aes(x = geo_accession,
-                       y = logtrans)) +
-  geom_boxplot() +
-  theme_minimal()
-```
+## Effect of Normalization
+ 
+To better understand the normalization, the distribution of the expression level is examined before normalization.
 
 ```{r}
-dat_expr |> 
+non_normalized_expr <- dat_clean |> 
   pivot_longer(cols = starts_with("ILMN"),
                names_to = "gene_id",
                values_to = "expression") |> 
+  mutate(log2_expression = log2(expression)) |> 
   ggplot(mapping = aes(x = geo_accession,
-                       y = expression)) +
-  geom_boxplot() +
-  theme_minimal()
+                       y = log2_expression)) +
+  geom_boxplot(outlier.shape = NA,
+               color = "orange",
+               fill = "orange",
+               alpha = 0.2) +
+  coord_cartesian(ylim =  c(5, 11)) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = "Patient",
+       y = "Non-normalized expression level (log2)",
+       title = "Distribution of gene expression level for each patient without normalization",
+       subtitle = "The most extreme values have been removed for illstrative puposes",
+       caption = "Data from Dawany et al. (2014)") 
+
+ggsave("../results/non_normalized_expr.png", plot = non_normalized_expr)
+show(non_normalized_expr)
+```
+ 
+After normalization, the quantiles for the expression level is equal for each patient. 
+ 
+```{r}
+normalized_expr <- dat_aug |> 
+  pivot_longer(cols = starts_with("ILMN"),
+               names_to = "gene_id",
+               values_to = "log2_norm_expression") |> 
+  ggplot(mapping = aes(x = geo_accession,
+                       y = log2_norm_expression)) +
+  geom_boxplot(outlier.shape = NA,
+               color = "orange",
+               fill = "orange",
+               alpha = 0.2) +
+  coord_cartesian(ylim =  c(6, 11)) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = "Patient",
+       y = "Normalized expression level (log2)",
+       title = "Distribution of gene expression level for each patient with normalization",
+       subtitle = "The most extreme values have been removed for illstrative puposes",
+       caption = "Data from Dawany et al. (2014)") 
+ 
+ggsave("../results/normalized_expr.png", plot = non_normalized_expr)
+show(normalized_expr)
 ```
