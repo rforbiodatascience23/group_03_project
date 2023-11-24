@@ -24,11 +24,9 @@ Load the augment data.
 dat_aug <- read_tsv(file = "../data/04_dat_aug.tsv")
 ```
 
+## Linear Regression
 
-## Linear Regression 
-
-In the following a linear regression model is mapped to the data.
-In order to do so, the data need to be pivoted to long format and grouped by genes. Gene expression levels and disease label are nested pr. gene.
+In the following a linear regression model is mapped to the data. In order to do so, the data need to be pivoted to long format and grouped by genes. Gene expression levels and disease label are nested pr. gene.
 
 ```{r}
 #| label: Pivot and nest data
@@ -52,19 +50,6 @@ dat_nest <- dat_nest |>
                             data = .x)))
 ```
 
-This chuck should be deleted, just a test
-
-```{r}
-#| label: OBS, just a test to see how a single model object looks like with tidy stats.
-
-dat_nest|>
-  filter(gene == "ILMN_1762337") |> 
-  pull(model_object) |> 
-  #   we "pluck" the first element
-  pluck(1) |>
-  tidy(conf.int = TRUE,
-       conf.level = 0.95)
-```
 
 Tidy statistics are mapped to the model of each gene and saved in 'tidy_model_object'.
 
