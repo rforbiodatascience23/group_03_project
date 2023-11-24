@@ -19,7 +19,7 @@ The data comes from total RNA isolated from peripheral blood mononuclear cell (P
 Loading required packages.
 
 ```{r}
-#| label: Load packages
+#| label: 01_Load packages
 #| message: false
 library("tidyverse")
 library("stringr")
@@ -33,7 +33,7 @@ Note: Instruction of how to install the package GEOquery can be found here *http
 This document will load the data from Gene Expression Omnibus. Furthermore, the file will export the data to a tsv-file. In the following, the data directory is defined along with the location of the original data.
 
 ```{r}
-#| label: Set up
+#| label: 01_Set up
 dest_dir <- "../data/"
 raw_dir <- str_c(dest_dir, "_raw/")
 expr_file <- "GSE50834_non-normalized.txt.gz"
@@ -49,7 +49,7 @@ if( !dir.exists(raw_dir) ){
 The gene expression data, containing patient-ID's and gene expression, is downloaded and stored in raw-data directory using the GEOquery library. GEOquery can download datas ets from the NCBI Gene Expression Omnibus (GEO), using a unique accession number.
 
 ```{r}
-#| label: Load expr-data
+#| label: 01_Load expr-data
 #| message: false
 if( !file.exists(str_c(raw_dir, expr_file)) ){
   getGEOSuppFiles(GEO = geo,
@@ -67,7 +67,7 @@ dat_expr <- read.table(file = str_c(raw_dir, expr_file),
 The meta data, containing patient-ID's patient information, is downloaded and stored in raw-data directory.
 
 ```{r}
-#| label: Load meta-data
+#| label: 01_Load meta-data
 #| message: false
 if (!file.exists(str_c(raw_dir, meta_file))){
   dat_meta <- getGEO(GEO = geo)
@@ -89,7 +89,7 @@ if (!file.exists(str_c(raw_dir, meta_file))){
 The gene expression data and the meta data are saved as .tsv-files
 
 ```{r}
-#| label: Write tsv-files
+#| label: 01_Write tsv-files
 dat_expr |> 
   write_tsv(file = str_c(dest_dir, "01_dat_load_expr.tsv"))
 

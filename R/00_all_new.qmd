@@ -4,11 +4,6 @@ format: html
 editor: visual
 ---
 
-```{r}
-quarto_render()
+{{< include 01_load.qmd >}}
 
-```
-
-
-
-
+{{< include 02_clean.qmd >}}
