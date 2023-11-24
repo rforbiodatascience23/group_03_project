@@ -13,7 +13,6 @@ Loading required packages.
 #| message: false
 library('tidyverse')
 library('broom')
-library('lubridate')
 ```
 
 Load the augment data.
