@@ -34,13 +34,9 @@ Our aim:
 
 ## Method {.smaller}
 
-![](original_paper.png){.absolute top="100" left="0" width="350" height="550"}
-
 :::: {.columns}
-::: {.column width="40%"}
-:::
-::: {.column width="60%"}
-Data handling:
+::: {.column width="50%"}
+Keep it clean and tidy:
 
 - Select variables 
 
@@ -49,16 +45,18 @@ Data handling:
 - Handle key-variable
 
 - Handle replications
+
+![](Table1, article.png){.absolute top="350" left="000" width="350" height="300"}
+:::
+::: {.column width="50%"}
+![](original_paper.png){.absolute top="50" left="600" width="450" height="650"}
 :::
 ::::
 
-![](Table1, article.png){.absolute top="350" left="400" width="350" height="300"}
 
 ## Methods {.smaller}
 
-Discriptive analysis 
-
-![](../results/barplot_patient_group.png){.absolute top="100" left="450" width="600" height="550"}
+![](../results/barplot_patient_group.png){.absolute top="50" left="250" width="700" height="650"}
 
 ## Methods {.smaller}
 
