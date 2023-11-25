@@ -112,7 +112,7 @@ forest_plot <- ggplot(data=dat_forest_plot, aes(x=estimate, y=fct_reorder(gene, 
 ggsave("../results/forest_plot.png",plot = forest_plot) 
 ```
 
-We see that most genes are downregulated.
+We see that most genes are down-regulated.
 
 ### Vulcano Plot
 
