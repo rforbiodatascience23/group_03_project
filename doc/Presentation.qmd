@@ -41,7 +41,7 @@ Data handling Remove irrelevant variables Change ugly variables Handle replicati
 
 ## Methods {.smaller}
 
-Discriptive analysis
+Discriptive analysis 
 
 ![](../results/barplot_patient_group.png){.absolute top="100" left="450" width="600" height="550"}
 
