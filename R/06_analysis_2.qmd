@@ -112,6 +112,8 @@ forest_plot <- ggplot(data=dat_forest_plot, aes(x=estimate, y=fct_reorder(gene, 
 ggsave("../results/forest_plot.png",plot = forest_plot) 
 ```
 
+We see that most genes are downregulated.
+
 ### Vulcano Plot
 
 A vulcano plot is generated to show significance of the genes as a function of the gene expression estimates.
