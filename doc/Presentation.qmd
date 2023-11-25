@@ -52,7 +52,7 @@ Data handling:
 :::
 ::::
 
-
+![](Table1, article.png){.absolute top="350" left="400" width="350" height="300"}
 
 ## Methods {.smaller}
 
