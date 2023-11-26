@@ -1,20 +1,18 @@
 ---
-title: "01_load.qmd"
+title: "01 LOAD"
 format: html
 editor: visual
 ---
 
-# 01 LOAD
-
 ## Data Origin
 
-The gene expression data used in this project is available in the Gene Expression Omnibus (GEO) under the accession number GSE50834. The data was used for the following paper:
+The gene expression data used in this project is available in the Gene Expression Omnibus (GEO) under the accession number GSE50834. The data originates from the following paper:
 
 Dawany N, Showe LC, Kossenkov AV, Chang C et al. Identification of a 251 gene expression signature that can accurately detect M. tuberculosis in patients with and without HIV co-infection. PLoS One 2014;9(2):e89925. PMID: 24587128
 
 ## Summary
 
-The data comes from total RNA isolated from peripheral blood mononuclear cell (PBMC) from a South African cohort. Microarry analysis was performed to compare gene expression in patients either infected with HIV or co-infected with HIV/TB. Diagnosis of TB, especially in the presence of an HIV co-infection, can be challenging when using conventional diagnostic methods. Therefore, the data was used to identify a TB-specific gene signature.
+The data comes from total RNA isolated from peripheral blood mononuclear cell (PBMC) from a South African cohort. Microarry analysis was performed to compare gene expression in patients either infected with HIV or co-infected with HIV and tuberculosis (TB). Diagnosis of TB, especially in the presence of an HIV co-infection, can be challenging when using conventional diagnostic methods. Therefore, the data was used to identify a TB-specific gene signature.
 
 ## Setup
 
@@ -32,7 +30,7 @@ Note: Instruction of how to install the package GEOquery can be found here *http
 
 ## Load Data
 
-This document will load the data from Gene Expression Omnibus. Furthermore, the file will export the data to a tsv-file. In the following, the data directory is defined along with the location of the original data.
+This document will load the data from Gene Expression Omnibus. Furthermore, the file will export the data as a tsv-file. In the following, the data directory is defined along with the location of the original data.
 
 ```{r}
 #| label: 01_Set up
@@ -48,7 +46,7 @@ if( !dir.exists(raw_dir) ){
 }
 ```
 
-The gene expression data, containing patient-ID's and gene expression, is downloaded and stored in raw-data directory using the GEOquery library. GEOquery can download datas ets from the NCBI Gene Expression Omnibus (GEO), using a unique accession number.
+The gene expression data, containing patient ID's and gene expression, is downloaded and stored in the raw data directory using the GEOquery library. GEOquery can download data sets from the NCBI Gene Expression Omnibus (GEO), using a unique accession number.
 
 ```{r}
 #| label: 01_Load expr-data
@@ -66,7 +64,7 @@ dat_expr <- read.table(file = str_c(raw_dir, expr_file),
                          header = TRUE)
 ```
 
-The meta data, containing patient-ID's patient information, is downloaded and stored in raw-data directory.
+The meta data, containing patient information, is downloaded and stored in the raw data directory.
 
 ```{r}
 #| label: 01_Load meta-data
