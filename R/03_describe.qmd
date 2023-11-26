@@ -1,10 +1,8 @@
 ---
-title: "Describe data"
+title: "03 DESCRIBE"
 format: html
 editor: visual
 ---
-
-# 03 DESCRIBE
 
 ## Setup
 
@@ -14,6 +12,7 @@ Loading required packages
 #| label: 03_Load packages
 #| message: false
 library("tidyverse")
+library("stringr")
 library("table1")
 ```
 
@@ -27,7 +26,7 @@ dat_clean <- read_tsv("../data/02_dat_clean.tsv")
 
 ## Data Description
 
-Create a bar plot to illustrate the number of males and females for each patient group.
+Define setting for bar plot to illustrate the number of males and females for each patient group.
 
 ```{r}
 #| label: 03_Define settings for plot
@@ -35,20 +34,21 @@ female_sign = intToUtf8(9792)
 male_sign = intToUtf8(9794)
 sign_size = 10
 bar_width = 0.75
-```
 
-```{r}
-#| label: 03_Bar plot
 groups <- dat_clean |> 
   group_by(gender,
            disease_state) |> 
   summarize(n = n())
+```
 
-barplot_patient_group <- 
-  ggplot(data = dat_clean,
-        mapping = aes(x = disease_state,
-                      fill = disease_state,
-                      alpha = gender)) +
+Create plot.
+
+```{r}
+#| label: 03_Bar plot
+barplot_patient_group <- ggplot(data = dat_clean,
+                                mapping = aes(x = disease_state,
+                                              fill = disease_state,
+                                              alpha = gender)) +
   geom_bar(width = bar_width,
            position = "dodge") +
   scale_fill_manual(
@@ -57,26 +57,34 @@ barplot_patient_group <-
   scale_alpha_manual(values = c("Male" = 0.6,
                                 "Female" = 0.9)) +
   annotate("text", 
-           x = 1:2-bar_width/4, 
+           x = 1:2 - bar_width/4, 
            y = groups$n[1:2] + 2, 
            label = female_sign, 
            size = sign_size) +
   annotate("text", 
-           x = 1:2+bar_width/4,
+           x = 1:2 + bar_width/4,
            y = groups$n[3:4] + 2, 
            label = male_sign, 
            size = sign_size) +
-  theme_minimal() + 
+  coord_cartesian(ylim =  c(0, 20)) +
+  theme_minimal(base_size = 16) + 
   labs(
     x = "Disease state",
     y = "Cases",
     fill = "Gender",
-    title = str_c("Distribution of males and females for HIV mono-infected and HIV/TB",
-                  "\n",
-                  "co-infected patients"),
+    title = "Patient Summary",
+    subtitle = str_c("Distribution of males and females for HIV mono-infected and",
+                     "\n",
+                     "HIV/TB co-infected patients"),
     caption = "Data from Dawany et al. (2014)"
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text.x = element_text(color = "black", 
+                                   size = 14),
+        axis.text.y = element_text(color = "black", 
+                                   size = 14),
+        axis.title = element_text(face="bold"),
+        plot.caption = element_text(face = "italic"))
 
 ggsave("../results/barplot_patient_group.png", plot = barplot_patient_group)
 show(barplot_patient_group)
@@ -93,4 +101,4 @@ summary_table <- dat_clean |>
 show(summary_table)
 ```
 
-From the above it is seen, that the gender of the HIV/TB co-infected patients is close to equal distributed between male and female. and that the gender of the HIV mono-infected is equal distributed with 72% females and only 27% males.
+From the above it is seen, that the gender of the HIV/TB co-infected patients is close to equal distributed between male and female, and that the gender of the HIV mono-infected is unequal distributed with 72% females and only 27% males.
