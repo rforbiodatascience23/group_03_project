@@ -1,10 +1,8 @@
 ---
-title: "Data Clean"
+title: "02 CLEAN"
 format: html
 editor: visual
 ---
-
-# 02 CLEAN
 
 ## Setup
 
@@ -27,7 +25,7 @@ dat_meta <- read_tsv("../data/01_dat_load_meta.tsv")
 
 ## Data Wrangling I
 
-In this section, variable of gene expression data and meta data are variables are cleaned seperately.
+In this section, variable of gene expression data and meta data are variables are cleaned separately.
 
 ### Gene Expression Data
 
@@ -43,7 +41,7 @@ From the inspection, it is seen that the data contain both gene expressions and 
 ```{r}
 #| label: 02_Clean dat_expr
 dat_expr <- dat_expr |> 
-  dplyr::select(-matches(match = "Detection.Pval"))
+  dplyr::select(!matches(match = "Detection.Pval"))
 
 dat_expr |> 
   sample_n(10)
@@ -85,7 +83,10 @@ dat_meta <- dat_meta |>
                 "identifier" = description.1)
 
 dat_meta |> 
-  select(patient_n, gender, disease_state) |>
+  dplyr::select(patient_n, 
+         gender, 
+         disease_state,
+         identifier) |>
   sample_n(10)
 ```
 
@@ -104,9 +105,7 @@ dat_meta |>
   sample_n(10)
 ```
 
-**Identifier**
-
-The column 'identifier' in the meta data contain the names of the genes described in the expression data. In the following, the 'identifier' is corrected to mimic the genes of the expression data.
+The column 'identifier' in the meta data contain the names of the genes described in the expression data. In the following, the 'identifier' is corrected to mimic the genes of the expression data in order to join the two data sets later on.
 
 The 'identifier' in the meta data is split into two columns to simplify the identifier but still keep the information about the dates.
 
@@ -120,7 +119,7 @@ dat_meta |>
   sample_n(10)
 ```
 
-In the gene expression data the gene names contain "-" while the 'identifier' in the meta data contain ".". Replace the "-" in the meta data to streamline the two data sets
+In the gene expression data the gene names contain "-" while the 'identifier' in the meta data contain ".". Replace the "-" in the meta data to streamline the two data sets.
 
 ```{r}
 #| label: 02_Streamline 'identifier'
@@ -137,7 +136,7 @@ Check if there is consensus between the 'identifiers' in the meta data and the c
 meta_identifier <- dat_meta |>
   pull(identifier)
 
-setdiff(colnames(dat_expr),meta_identifier)
+setdiff(colnames(dat_expr), meta_identifier)
 ```
 
 The only difference between 'identifier' in meta data and column names of the gene expression data is the 'ID' column for the genes as expected.
@@ -148,7 +147,7 @@ In the following steps, the format of the data will be changed. Furthermore, we 
 
 ### Data Pivoting
 
-The gene expression data is transposed by pivoting sample 'identifier' to long format and gene 'ID' to wide format.
+The gene expression data is transposed by pivoting sample 'identifier' to long format and gene 'ID' to wide format. The data should be tidy, which requires each observation, that is, each patient, must be a row, with the variables as columns. 
 
 ```{r}
 #| label: 02_Pivot dat_expr
@@ -158,6 +157,9 @@ dat_expr <- dat_expr |>
                values_to = "count") |> 
   pivot_wider(names_from = ID,
               values_from = count)
+
+dat_expr |> 
+  sample_n(10)
 ```
 
 ### Data Joining
@@ -194,8 +196,9 @@ The mean gene expression is calculated for each replicated patient.
 #| label: 02_Mean expression for replicates
 dat_rep_mean <- dat_rep |> 
   group_by(patient_n) |>
-  summarise(across(starts_with("ILMN"), 
-                   mean, na.rm = TRUE))
+  summarise(across(.cols = starts_with("ILMN"),
+                   .fns = mean,
+                   na.rm = TRUE))
 
 dat_rep_mean
 ```
@@ -206,24 +209,25 @@ The metadata for each replicated patient is extracted. The 'geo accession' and '
 #| label: 02_Extraxt and collapse meta data for replicates
 cols_rep_meta_collapesed <- dat_rep |>
   group_by(patient_n) |> 
-  summarise(geo_accession = str_c(geo_accession, collapse = "_"),
+  mutate(geo_accession = str_c(geo_accession, collapse = "_"),
             identifier = str_c(identifier, collapse = "_"))
+
+cols_rep_meta_collapesed
 ```
 
 A new column called 'modified' is added to the meta data. The column describes if the patient has been modified (eg. the gene expression represent a mean of multiple gene expressions for one patient).
 
 ```{r}
 #| label: 02_Add column modified
-cols_rep_meta <- dat_rep |>
-  select(patient_n, gender, disease_state, date) |> 
+cols_rep_meta <- cols_rep_meta_collapesed |>
+  dplyr::select(!starts_with("ILMN")) |> 
   distinct() |> 
-  add_column(cols_rep_meta_collapesed |> select(geo_accession, identifier),
-             modified = 1)
+ mutate(modified = 1)
 
 cols_rep_meta
 
 dat_clean <- dat_clean |>
-  add_column(modified = 0)
+  mutate(modified = 0)
 ```
 
 Combine the new meta data with the mean gene expression for the each replicated patient.
@@ -231,8 +235,8 @@ Combine the new meta data with the mean gene expression for the each replicated 
 ```{r}
 #| label: 02_Combine mean expression and meta data for replicates
 dat_rep_clean <- inner_join(x = cols_rep_meta, 
-                          y = dat_rep_mean,
-                          by = "patient_n")
+                            y = dat_rep_mean,
+                            by = "patient_n")
 ```
 
 Finally, the new data for th replicated patients are combines with the data for the non-replicated patients to form a clean data set without replicates.
@@ -241,10 +245,11 @@ As the patient_n variable is no longer informative, this column is removed for a
 
 ```{r}
 #| label: 02_Add rep data with non-rep data
-dat_clean <- bind_rows(dat_clean, dat_rep_clean) |>
+#| message: false
+dat_clean <- full_join(dat_clean, dat_rep_clean) |>
   relocate(modified, .after = date) |>
   filter(!str_detect(patient_n, "_")) |>  
-  dplyr::select(-patient_n) |> 
+  dplyr::select(!patient_n) |> 
   arrange(disease_state) 
 
 dat_clean |> 
