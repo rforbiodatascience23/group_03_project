@@ -1,5 +1,5 @@
 ---
-title: "Analysis 2"
+title: "06 ANALYSIS 2"
 format: html
 editor: visual
 ---
@@ -43,14 +43,14 @@ dat_nest <- dat_aug |>
 dat_nest
 ```
 
-A linar regression model is mapped to the nested data of each gene.
+A linear regression model is mapped to the nested data of each gene.
 
 ```{r}
 #| label: 06_Linear regression model 
 dat_nest <- dat_nest |>
   mutate(model_object = map(.x = data,
-                   .f = ~lm(formula = log2_expr_level ~ disease_state,
-                            data = .x)))
+                            .f = ~lm(formula = log2_expr_level ~ disease_state,
+                                     data = .x)))
 ```
 
 Tidy statistics are mapped to the model of each gene and saved in 'tidy_model_object'.
@@ -59,11 +59,9 @@ Tidy statistics are mapped to the model of each gene and saved in 'tidy_model_ob
 #| label: 06_Apply tidy to model objects
 dat_nest <- dat_nest |>
   mutate(tidy_model_object = map(.x = model_object,
-                   .f = ~tidy(conf.int = TRUE,
-                              conf.level = 0.95,
-                              x = .x)))
-
-
+                                 .f = ~tidy(conf.int = TRUE,
+                                            conf.level = 0.95,
+                                            x = .x)))
 ```
 
 The tidy model objects are unnested, only slope estimates are kept for each gene and selected together with p-values and CI values. Lastly, the data is being ungrouped.
@@ -73,7 +71,11 @@ The tidy model objects are unnested, only slope estimates are kept for each gene
 dat_estimates <- dat_nest |> 
   unnest(tidy_model_object) |> 
   filter(term != "(Intercept)") |> 
-  select(gene, p.value, estimate, conf.low, conf.high) |> 
+  dplyr::select(gene, 
+         p.value, 
+         estimate, 
+         conf.low, 
+         conf.high) |> 
   ungroup()
 ```
 
@@ -90,6 +92,17 @@ dat_estimates |>
   summarise(n = n())
 ```
 
+
+We convert the illumina probe names to the gene symbol. 
+
+```{r}
+dat_estimates <- dat_estimates |> 
+  mutate(gene_symbol = map(.x = gene,
+                           .f = ~ get(x = .x, 
+                                      envir = illuminaHumanv4SYMBOL)),
+         gene_symbol = unlist(gene_symbol))
+```
+
 ### Forest Plot
 
 A forest plot is generated showing the genes that are significantly up- or down-regulated in tuberculosis patients (TB).
@@ -99,15 +112,34 @@ A forest plot is generated showing the genes that are significantly up- or down-
 dat_forest_plot <- dat_estimates |> 
   filter(significant == "Yes") 
 
-forest_plot <- ggplot(data=dat_forest_plot, aes(x=estimate, y=fct_reorder(gene, estimate), xmin = conf.low, xmax = conf.high)) +
-  geom_point() +
+forest_plot <- ggplot(data = dat_forest_plot, 
+                      aes(x=estimate, 
+                          y=fct_reorder(gene_symbol, estimate), 
+                          xmin = conf.low, 
+                          xmax = conf.high)) +
   geom_errorbarh() +
-  labs(
-    x = "Estimates (95% CIs)", y = "", title = "Genes Associated with Tuberculosis in HIV patients"  
-  ) +
-  theme_minimal()
+  geom_point(color = "royalblue") +
+  labs(x = "Estimates (95% CIs)", 
+       y = "", 
+       title = "Genes Associated with Tuberculosis in HIV patients") +
+  theme_minimal(base_size = 14) + 
+  labs(x = "Estimates (95% CIs)",
+       y = "Genes",
+       title = "TB-signature",
+       subtitle = str_c("Genes Associated with Tuberculosis in HIV patients",
+                        "\n",
+                        ""),
+       caption = "Data from Dawany et al. (2014)") +
+  theme(axis.text.x = element_text(color = "black", 
+                                   size = 12),
+        axis.text.y = element_text(color = "black", 
+                                   size = 12),
+        axis.title = element_text(face="bold"),
+        plot.caption = element_text(face = "italic"),
+        legend.text = element_text(size = 12))
 
-ggsave("../results/forest_plot.png",plot = forest_plot) 
+ggsave("../results/forest_plot.png", plot = forest_plot) 
+show(forest_plot)
 ```
 
 We see that most genes are down-regulated.
@@ -118,37 +150,40 @@ A volcano plot is generated to show significance of the genes as a function of t
 
 ```{r}
 #| label: 06_volcano plot
-
 dat_volcano_plot <- dat_estimates |> 
-  mutate(gene_labels = case_when(significant == "Yes" ~ gene, TRUE ~""))
+  mutate(gene_labels = case_when(significant == "Yes" ~ gene_symbol, 
+                                 TRUE ~ ""))
 
-volcano_plot <- ggplot(data=dat_volcano_plot, aes(x=estimate,
-                                   y=-log10(p.value), 
-                                   color = significant,
-                                   label = gene_labels)) +
+volcano_plot <- ggplot(data = dat_volcano_plot, 
+                       aes(x = estimate,
+                           y = -log10(p.value), 
+                           color = significant,
+                           label = gene_labels)) +
   geom_point(alpha = 0.7) +
-  scale_color_manual(
-    values = c("Yes" = "orange", 
-               "No" = "gray")) +
-  labs(
-    x = "Estimates (95% CIs)",
-    y = "-log10(p)",
-    title = "Genes Associated with Tuberculosis",
-    subtitle = "Genes highlighted in orange were significant after multiple testing correction"
-  ) +
-  theme_minimal() +
-  geom_text_repel(size = 1.5, max.overlaps = 31) +
+  scale_color_manual(values = c("Yes" = "royalblue", 
+                                "No" = "gray")) +
+  theme_minimal(base_size = 16) + 
+  labs(x = "Estimates",
+       y = "-log10(p)",
+       title = "Genes Associated with Tuberculosis",
+       subtitle = str_c("Genes highlighted in orange were significant after multiple",
+                        "\n",
+                        "testing correction"),
+       caption = "Data from Dawany et al. (2014)") +
   theme(legend.position = "none",
-        plot.title = element_text(hjust = 0),  
-        plot.subtitle = element_text(hjust = 0),
-        axis.text = element_text(size = 5)
-  )
+        axis.text.x = element_text(color = "black", 
+                                   size = 14),
+        axis.text.y = element_text(color = "black", 
+                                   size = 14),
+        axis.title = element_text(face="bold"),
+        plot.caption = element_text(face = "italic"),
+        legend.text = element_text(size = 14)) +
+  geom_text_repel(size = 3, 
+                  max.overlaps = 20) 
 
 
 ggsave("../results/volcano_plot.png",plot = volcano_plot)  
-
 ```
-
 
 ### Compare most significant genes with list of diagnostic genes from the 251 gene signature from the paper.
 
@@ -156,31 +191,14 @@ Extract the significant genes with original gene ID
 
 ```{r}
 #| label: 06_extract original gene IDs
-
-#might be problem that the gene id is not stored correctly
-Gene_IDs <- dat_estimates |>
+significant_genes <- dat_estimates |> 
   filter(significant == "Yes") |>
-  mutate(gene_id = map( .x = gene,
-                   .f = ~ mget(x = .x, 
-                               envir = illuminaHumanv4SYMBOL)) |> 
-           unlist()) |> 
-  pull(gene_id)
-
-Gene_IDs
-#old base R way to extract gene id's
-#estimated_sign_genes <- dat_estimates |>
-#  filter(significant == "Yes") |>
-#  pull(gene)
-
-#Gene_IDs <- data.frame(Gene_ID =unlist(mget(x = estimated_sign_genes,envir = #illuminaHumanv4SYMBOL))) |>
-#  as.tibble() |>
-#  pull(Gene_ID)
-
+  dplyr::select(gene_symbol) |> 
+  pull()
 ```
 
 ```{r}
 #| label: 06_compare significant genes with 251 signature
-
 signature_251_str <- c("DHRS4
 EYA3
 CMIP
@@ -434,9 +452,9 @@ BCLAF1
 CLTB
 ")
 
-signature_251_list = str_split(signature_251_str, "\n")
+signature_251_list = str_split(signature_251_str, "\n")[[1]]
 
-intersect(Gene_IDs, signature_251_list)
+intersect(significant_genes, signature_251_list)
 ```
 
 We find no intersection between the 40 significant genes from the linear analysis and the 251 signature genes from the article.
