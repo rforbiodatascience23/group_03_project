@@ -114,7 +114,7 @@ dat_forest_plot <- dat_estimates |>
 
 forest_plot <- ggplot(data = dat_forest_plot, 
                       aes(x=estimate, 
-                          y=fct_reorder(gene_symbol, estimate), 
+                          y=fct_reorder(gene, estimate), 
                           xmin = conf.low, 
                           xmax = conf.high)) +
   geom_errorbarh() +
@@ -179,7 +179,7 @@ volcano_plot <- ggplot(data = dat_volcano_plot,
         plot.caption = element_text(face = "italic"),
         legend.text = element_text(size = 14)) +
   geom_text_repel(size = 3, 
-                  max.overlaps = 20) 
+                  max.overlaps = 5) 
 
 
 ggsave("../results/volcano_plot.png",plot = volcano_plot)  
