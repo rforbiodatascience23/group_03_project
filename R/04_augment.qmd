@@ -38,7 +38,7 @@ dat_meta <- dat_clean |>
 
 ## Normalization
 
-The purpose of normalization to minimize technical variability such that the remaining variation can be explained by biological differences. Technical variation can occur because of preparation differences or differences in the production of the microarrays and the processing of the arrays (for instance scanner differences). A general strategy is to re-distribute signal intensities across all samples such that they now all have the same distribution in order to compare the data from multiple samples.
+The purpose of normalization is to minimize technical variability such that the remaining variation can be explained by biological differences. Technical variation can occur because of preparation differences or differences in the production of the microarrays and the processing of the arrays (for instance scanner differences). A general strategy is to re-distribute signal intensities across all samples such that they now all have the same distribution in order to compare the data from multiple samples.
 
 The gene expression levels in the cleaned data are normalized by quantile normalization implemented in the function `r normalize.quantiles()`. This ensures that expression levels can be compared between patients in the data set. The algorithm is as follows:
 
@@ -52,16 +52,19 @@ The gene expression levels in the cleaned data are normalized by quantile normal
 
 ```{r}
 #| label: 04_Normalise dat_expr
-dat_expr_matrix <- as.matrix(t(dat_expr)) 
-colnames(dat_expr_matrix) <- dat_meta$identifier 
-dat_expr_matrix <- normalize.quantiles(dat_expr_matrix, 
-                                keep.names = TRUE) 
-dat_expr <- as_tibble(t(dat_expr_matrix), rownames = NA)
+dat_expr_matrix <- as.matrix(t(dat_expr))
+colnames(dat_expr_matrix) <- dat_meta |> 
+  pull(identifier) 
+dat_expr <- normalize.quantiles(dat_expr_matrix, 
+                                keep.names = TRUE) |>
+  t() |> 
+  as_tibble(, rownames = NA)
+
 ```
 
 ## Log Transformation
 
-In the following the gene expression data is log2 transformed. This method is commonly used for microarray data. The goal is to stabilizes the data variance of high intensities but increases the variance at low intensities.
+In the following, the gene expression data is log2 transformed. This method is commonly used for microarray data to handle the issue that higher expression levels tend to have higher variance and vice versa.
 
 ```{r}
 #| label: 04_Log-transformation
@@ -91,7 +94,7 @@ dat_aug |>
 This was just a way to briefly see the effect and is not expected to be included in the final code:
 
 ## Effect of Normalization
- 
+
 To better understand the normalization, the distribution of the expression level is examined before normalization.
 
 ```{r}
@@ -119,9 +122,9 @@ non_normalized_expr <- dat_clean |>
 ggsave("../results/non_normalized_expr.png", plot = non_normalized_expr)
 show(non_normalized_expr)
 ```
- 
-After normalization, the quantiles for the expression level is equal for each patient. 
- 
+
+After normalization, the quantiles for the expression level is equal for each patient.
+
 ```{r}
 normalized_expr <- dat_aug |> 
   pivot_longer(cols = starts_with("ILMN"),
