@@ -14,6 +14,7 @@ Loading required packages.
 library('tidyverse')
 library('broom')
 library("ggrepel")
+library("illuminaHumanv4.db")
 ```
 
 Load the augment data.
@@ -76,20 +77,17 @@ dat_estimates <- dat_nest |>
   ungroup()
 ```
 
-An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05% significance level and a "most_sign varible with the 20 most significant genes.
+An adjusted p-value is calculated and added to the data estimate table together with a "significant label" based on a 0.05%.
 
 ```{r}
 #| label: 06_Adjusted p-value and significant label
 dat_estimates <- dat_estimates |>
   mutate(p_val_adjust = p.adjust(p.value),
-         significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No")) |> 
-  arrange(p_val_adjust) |>
-         mutate(most_sign = case_when(
-           p_val_adjust < nth(p_val_adjust, 20) ~ "Yes", TRUE ~"No")) 
-
+         significant = case_when(p_val_adjust <= 0.05 ~ "Yes", TRUE ~"No"))
 
 dat_estimates |> 
-  filter(most_sign == "Yes")
+  filter(significant == "Yes") |> 
+  summarise(n = n())
 ```
 
 ### Forest Plot
@@ -114,35 +112,331 @@ ggsave("../results/forest_plot.png",plot = forest_plot)
 
 We see that most genes are down-regulated.
 
-### Vulcano Plot
+### Volcano Plot
 
-A vulcano plot is generated to show significance of the genes as a function of the gene expression estimates.
+A volcano plot is generated to show significance of the genes as a function of the gene expression estimates.
 
 ```{r}
-#| label: 06_Vulcano plot
+#| label: 06_volcano plot
 
-dat_vulcano_plot <- dat_estimates |> 
-  mutate(gene_labels = case_when(p_val_adjust <= 0.05 ~ gene, TRUE ~""))
+dat_volcano_plot <- dat_estimates |> 
+  mutate(gene_labels = case_when(significant == "Yes" ~ gene, TRUE ~""))
 
-vulcano_plot <- ggplot(data=dat_vulcano_plot, aes(x=estimate,
+volcano_plot <- ggplot(data=dat_volcano_plot, aes(x=estimate,
                                    y=-log10(p.value), 
                                    color = significant,
                                    label = gene_labels)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.7) +
+  scale_color_manual(
+    values = c("Yes" = "orange", 
+               "No" = "gray")) +
   labs(
     x = "Estimates (95% CIs)",
     y = "-log10(p)",
     title = "Genes Associated with Tuberculosis",
-    subtitle = "Genes highlighted in turquoise were significant after multiple testing correction"
+    subtitle = "Genes highlighted in orange were significant after multiple testing correction"
   ) +
   theme_minimal() +
-  geom_text_repel(size = 2, max.overlaps = 20) +
+  geom_text_repel(size = 1.5, max.overlaps = 31) +
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0),  
-        plot.subtitle = element_text(hjust = 0)  
+        plot.subtitle = element_text(hjust = 0),
+        axis.text = element_text(size = 5)
   )
 
 
-ggsave("../results/vulcano_plot.png",plot = vulcano_plot)  
+ggsave("../results/volcano_plot.png",plot = volcano_plot)  
 
 ```
+
+
+### Compare most significant genes with list of diagnostic genes from the 251 gene signature from the paper.
+
+Extract the significant genes with original gene ID
+
+```{r}
+#| label: 06_extract original gene IDs
+
+#might be problem that the gene id is not stored correctly
+Gene_IDs <- dat_estimates |>
+  filter(significant == "Yes") |>
+  mutate(gene_id = map( .x = gene,
+                   .f = ~ mget(x = .x, 
+                               envir = illuminaHumanv4SYMBOL)) |> 
+           unlist()) |> 
+  pull(gene_id)
+
+Gene_IDs
+#old base R way to extract gene id's
+#estimated_sign_genes <- dat_estimates |>
+#  filter(significant == "Yes") |>
+#  pull(gene)
+
+#Gene_IDs <- data.frame(Gene_ID =unlist(mget(x = estimated_sign_genes,envir = #illuminaHumanv4SYMBOL))) |>
+#  as.tibble() |>
+#  pull(Gene_ID)
+
+```
+
+```{r}
+#| label: 06_compare significant genes with 251 signature
+
+signature_251_str <- c("DHRS4
+EYA3
+CMIP
+UBTF
+TMEM164
+CDKN2B
+PTK2
+LOC648605
+NaN
+ACOX3
+MLKL
+ATP5I
+STX6
+WTAP
+MR1
+LOC151579
+SIK3
+USP41
+WDR63
+INTS3
+LOC653717
+TLN1
+NINJ2
+GRAMD3
+SCAND2
+RSPH3
+CREB3L2
+PARP2
+NENF
+TNFRSF14
+CSNK1G3
+AMY1B
+TIAL1
+MOBKL2C
+LOC728635
+LOC285053
+C3orf64
+USP34
+NaN
+RTN1
+EIF3J
+PPM1F
+REL
+C16orf48
+ASCL2
+STX6
+ACVR1
+ZNF91
+MICB
+MSRB2
+TCEA1
+BTBD1
+DHRS4L2
+LOC402057
+HPCAL1
+P2RY13
+LOC388122
+MATR3
+KIAA0947
+APOL6
+GK
+HLA-DMA
+FDFT1
+GBP2
+ST3GAL2
+GK
+BCCIP
+BRSK1
+MLKL
+MALT1
+CPEB3
+LOC648605
+TXNIP
+NaN
+TMEM51
+ETV6
+SUMO4
+MTDH
+RAB11FIP1
+DNAJC2
+LOC399715
+NCBP2
+EPB41L4A
+NaN
+ZNF516
+NaN
+LOC648210
+LOC285359
+FLVCR2
+RBBP7
+HSPD1
+UAP1
+ZWILCH
+NCL
+TRAFD1
+RNF181
+PACSIN2
+PDCD6
+FLJ38973
+WDR43
+PIK3R1
+WBP2
+RPRC1
+C1orf54
+C6orf47
+NaN
+DNAL4
+KIAA0319L
+SUB1
+C19orf56
+TNPO1
+G6PD
+LOC91431
+LOC648057
+SNORD36A
+CDKN2D
+LMO4
+ASCC3
+C7orf36
+MPZL2
+NPTN
+TGIF1
+UBE2Q2
+NaN
+CLK1
+KIAA0146
+RNF19A
+NEDD8
+LOC390354
+YME1L1
+LPCAT2
+NaN
+PCDHA1
+LZTFL1
+SEPT5
+CCDC99
+LOC285176
+KIAA1370
+MRPL47
+C9orf91
+KIAA1333
+FAM120A
+LOC644380
+MYL6
+BZW1
+ASPHD2
+ABCE1
+PCGF6
+TSPYL2
+NCOA4
+SFXN1
+IRF1
+COASY
+TAOK2
+RAB24
+AEBP2
+PPP2CB
+HLA-DMB
+SFRS2IP
+NaN
+USP16
+KPNA3
+MAN1A1
+SDHAP3
+HIF1AN
+SLC25A3
+PCMT1
+BZW1
+ZNF124
+ZNF679
+S100Z
+STAT2
+WAS
+DHRS4
+TRIM23
+NaN
+MEFV
+R3HDM1
+DHRS9
+LOC653610
+DGAT1
+DNAJB6
+SFRS3
+EED
+NaN
+ZNF254
+ANKRD44
+CDK6
+ZNF451
+NAE1
+REV3L
+ITGA4
+UBA2
+PGCP
+GOLT1B
+NARG2
+PRCP
+TIPIN
+SNORA25
+CASP4
+PCF11
+LOC649555
+TPMT
+RANBP2
+TCP11L1
+NCL
+LOC654189
+ZC3H15
+G6PD
+NAGK
+SUMF1
+CARM1
+PPBP
+FASTKD2
+C10orf54
+PDE4D
+NaN
+KRAS
+ARSA
+MRPL35
+ARL4C
+SMAD7
+SNORA32
+CCNC
+UBE2L6
+C2orf79
+TMLHE
+LOC90120
+MALT1
+IFNAR2
+FLJ10996
+LOC647436
+TAF9
+NPIP
+YME1L1
+EED
+ZNF624
+ANAPC1
+ZNF669
+STAT1
+SNX27
+MOBKL2A
+HSP90AA1
+ZNF644
+KIAA0020
+LOC728643
+LOC440145
+GEMIN6
+DDHD1
+BCLAF1
+CLTB
+")
+
+signature_251_list = str_split(signature_251_str, "\n")
+
+intersect(Gene_IDs, signature_251_list)
+```
+
+We find no intersection between the 40 significant genes from the linear analysis and the 251 signature genes from the article.
