@@ -55,7 +55,7 @@ The gene expression levels in the cleaned data are normalized by quantile normal
 dat_expr_matrix <- as.matrix(t(dat_expr))
 colnames(dat_expr_matrix) <- dat_meta |> 
   pull(identifier) 
-dat_expr_matrix <- normalize.quantiles(dat_expr_matrix, 
+dat_expr <- normalize.quantiles(dat_expr_matrix, 
                                 keep.names = TRUE) |>
   t() |> 
   as_tibble(, rownames = NA)
