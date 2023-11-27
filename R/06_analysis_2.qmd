@@ -375,6 +375,8 @@ intersect_genes <- intersect(significant_genes, signature_251_list)
 
 dat_estimates <- dat_estimates |> 
   mutate(signature_251 = case_when(gene_symbol %in% intersect_genes ~ "Yes", TRUE ~ "No"))
+
+intersect_genes
 ```
 
 We find 10 overlapping genes between the 40 significant genes from the linear analysis and the 251 signature genes found by a SVM algorithm from the reference article.
