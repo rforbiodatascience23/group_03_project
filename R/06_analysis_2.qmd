@@ -478,6 +478,6 @@ volcano_plot <- ggplot(data = dat_volcano_plot,
   geom_text_repel(size = 2, 
                   max.overlaps = 30) 
 
-
 ggsave("../results/volcano_plot.png",plot = volcano_plot)  
+show(volcano_plot)
 ```
