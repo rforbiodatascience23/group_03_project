@@ -1,19 +1,23 @@
 ---
 title: "Run all"
-format: html
+format:
+  html:
+    embed-resources: true
 editor: visual
 ---
 
 ```{r}
 #| label: 00_Load packages
-library(quarto)
 #| message: false
+#| output: false
+library(quarto)
 ```
 
 ## Render individual documents
 
 ```{r}
-#| label: 01_Load 
+#| label: 01_Load
+#| output: false
 quarto_render(input = "01_load.qmd")
 file.rename(from = "01_load.html",
             to = "../results/01_load.html")
@@ -21,13 +25,15 @@ file.rename(from = "01_load.html",
 
 ```{r}
 #| label: 02_Clean
+#| output: false
 quarto_render(input = "02_clean.qmd")
 file.rename(from = "02_clean.html",
             to = "../results/02_clean.html")
 ```
 
 ```{r}
-#| label: 03_Describe 
+#| label: 03_Describe
+#| output: false
 quarto_render(input = "03_describe.qmd")
 file.rename(from = "03_describe.html",
             to = "../results/03_describe.html")
@@ -35,13 +41,15 @@ file.rename(from = "03_describe.html",
 
 ```{r}
 #| label: 04_Augment
+#| output: false
 quarto_render(input = "04_augment.qmd")
 file.rename(from = "04_augment.html",
             to = "../results/04_augment.html")
 ```
 
 ```{r}
-#| label: 05_Analysis1 
+#| label: 05_Analysis1
+#| output: false
 quarto_render(input = "05_analysis_1.qmd")
 file.rename(from = "05_analysis_1.html",
             to = "../results/05_analysis_1.html")
@@ -49,6 +57,7 @@ file.rename(from = "05_analysis_1.html",
 
 ```{r}
 #| label: 06_Analysis2
+#| output: false
 quarto_render(input = "06_analysis_2.qmd")
 file.rename(from = "06_analysis_2.html",
             to = "../results/06_analysis_2.html")
