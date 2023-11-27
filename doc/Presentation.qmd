@@ -27,11 +27,18 @@ Our aim:
 
 -   Compare with the 251-gene signature found with the SVM model
 
+Reference: (Dawany, N.)
+
 ![](original_paper.png){.absolute top="1" left="900" width="350" height="450"}
 
 ## Method {.smaller}
 
 ::: columns
+::: {.column width="50%"}
+Data flow:
+![](project_flow_chart.png){.absolute top="130" left="000" width="370" height="450"}
+:::
+
 ::: {.column width="50%"}
 Keep it clean and tidy:
 
@@ -43,13 +50,9 @@ Keep it clean and tidy:
 
 -   Handle replications
 
-![](Table1,%20article.png){.absolute top="350" left="000" width="350" height="300"}
+:::
 :::
 
-::: {.column width="50%"}
-![](../results/project_flow_chart.png){.absolute top="50" left="600" width="450" height="650"}
-:::
-:::
 
 ## Methods {.smaller}
 
@@ -61,20 +64,11 @@ Normalization - minimize technical variability
 
 Log transformation - stabilize variance, reduce skewness
 
-Quantile Normalization:
-
-1.  Sort the the expression levels for each patient.
-2.  Calculate the mean expression level of the genes within the same rank.
-3.  Assign this mean to each gene within this rank.
-4.  Rearranging the genes for each patient to obtain the original order.
+![](../results/non_normalized_expr.png){.absolute top="150" left="0" width="550" height="550"} ![](../results/normalized_expr.png){.absolute top="150" left="600" width="550" height="550"}
 
 ## Methods {.smaller}
 
-![](../results/non_normalized_expr.png){.absolute top="100" left="0" width="550" height="550"} ![](../results/normalized_expr.png){.absolute top="100" left="600" width="550" height="550"}
-
-## Methods {.smaller}
-
-![](../results/PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"} ![](../results/Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
+![](PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"} ![](Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
 
 ## Results - PCA {.smaller}
 

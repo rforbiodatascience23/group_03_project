@@ -1,6 +1,8 @@
 ---
 title: "01 LOAD"
-format: html
+format:
+  html:
+    embed-resources: true
 editor: visual
 ---
 
