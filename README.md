@@ -18,7 +18,7 @@ However, the statistics showed in Github insights are not reflected by the true 
 
 This repository is organized with a data, doc, R and results folder. In data is a raw folder created with the data downloaded, which is obtained from Gene Expression Omnibus (GEO) under the accession number GSE50834. The rest of the data folder is filled with intermediary output files when running the scripts. The final data folder will contain two output files from 01_load.qmd, one file from 02_clean.qmd and one file from 04_augment.qmd. All output tsv files are named corresponding to the script number it is produced from.
 
-The doc folder contain the presentation and image files used in the presentation.qmd, not generated from our own analysis.
+The doc folder contain the presentation and an image folder with files used in the presentation.qmd, not generated from our own analysis.
 
 The R folder contain the scripts to perform the analysis.
 
