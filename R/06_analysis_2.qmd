@@ -92,8 +92,7 @@ dat_estimates |>
   summarise(n = n())
 ```
 
-
-We convert the illumina probe names to the gene symbol. 
+We convert the illumina probe names to the gene symbol.
 
 ```{r}
 dat_estimates <- dat_estimates |> 
@@ -101,88 +100,6 @@ dat_estimates <- dat_estimates |>
                            .f = ~ get(x = .x, 
                                       envir = illuminaHumanv4SYMBOL)),
          gene_symbol = unlist(gene_symbol))
-```
-
-### Forest Plot
-
-A forest plot is generated showing the genes that are significantly up- or down-regulated in tuberculosis patients (TB).
-
-```{r}
-#| label: 06_Forrest plot
-dat_forest_plot <- dat_estimates |> 
-  filter(significant == "Yes") 
-
-forest_plot <- ggplot(data = dat_forest_plot, 
-                      aes(x=estimate, 
-                          y=fct_reorder(gene, estimate), 
-                          xmin = conf.low, 
-                          xmax = conf.high)) +
-  geom_errorbarh() +
-  geom_point(color = "royalblue") +
-  labs(x = "Estimates (95% CIs)", 
-       y = "", 
-       title = "Genes Associated with Tuberculosis in HIV patients") +
-  theme_minimal(base_size = 14) + 
-  labs(x = "Estimates (95% CIs)",
-       y = "Genes",
-       title = "TB-signature",
-       subtitle = str_c("Genes Associated with Tuberculosis in HIV patients",
-                        "\n",
-                        ""),
-       caption = "Data from Dawany et al. (2014)") +
-  theme(axis.text.x = element_text(color = "black", 
-                                   size = 12),
-        axis.text.y = element_text(color = "black", 
-                                   size = 12),
-        axis.title = element_text(face="bold"),
-        plot.caption = element_text(face = "italic"),
-        legend.text = element_text(size = 12))
-
-ggsave("../results/forest_plot.png", plot = forest_plot) 
-show(forest_plot)
-```
-
-We see that most genes are down-regulated.
-
-### Volcano Plot
-
-A volcano plot is generated to show significance of the genes as a function of the gene expression estimates.
-
-```{r}
-#| label: 06_volcano plot
-dat_volcano_plot <- dat_estimates |> 
-  mutate(gene_labels = case_when(significant == "Yes" ~ gene_symbol, 
-                                 TRUE ~ ""))
-
-volcano_plot <- ggplot(data = dat_volcano_plot, 
-                       aes(x = estimate,
-                           y = -log10(p.value), 
-                           color = significant,
-                           label = gene_labels)) +
-  geom_point(alpha = 0.7) +
-  scale_color_manual(values = c("Yes" = "royalblue", 
-                                "No" = "gray")) +
-  theme_minimal(base_size = 16) + 
-  labs(x = "Estimates",
-       y = "-log10(p)",
-       title = "Genes Associated with Tuberculosis",
-       subtitle = str_c("Genes highlighted in orange were significant after multiple",
-                        "\n",
-                        "testing correction"),
-       caption = "Data from Dawany et al. (2014)") +
-  theme(legend.position = "none",
-        axis.text.x = element_text(color = "black", 
-                                   size = 14),
-        axis.text.y = element_text(color = "black", 
-                                   size = 14),
-        axis.title = element_text(face="bold"),
-        plot.caption = element_text(face = "italic"),
-        legend.text = element_text(size = 14)) +
-  geom_text_repel(size = 3, 
-                  max.overlaps = 5) 
-
-
-ggsave("../results/volcano_plot.png",plot = volcano_plot)  
 ```
 
 ### Compare most significant genes with list of diagnostic genes from the 251 gene signature from the paper.
@@ -452,9 +369,108 @@ BCLAF1
 CLTB
 ")
 
-signature_251_list = str_split(signature_251_str, "\n")[[1]]
+signature_251_list <- str_split(signature_251_str, "\n")[[1]]
 
-intersect(significant_genes, signature_251_list)
+intersect_genes <- intersect(significant_genes, signature_251_list)
+
+dat_estimates <- dat_estimates |> 
+  mutate(signature_251 = case_when(gene_symbol %in% intersect_genes ~ "Yes", TRUE ~ "No"))
 ```
 
-We find no intersection between the 40 significant genes from the linear analysis and the 251 signature genes from the article.
+We find 10 overlapping genes between the 40 significant genes from the linear analysis and the 251 signature genes found by a SVM algorithm from the reference article.
+
+### Forest Plot
+
+A forest plot is generated showing the genes that are significantly up- or down-regulated in tuberculosis patients (TB).
+
+```{r}
+#| label: 06_Forrest plot
+dat_forest_plot <- dat_estimates |> 
+  filter(significant == "Yes") 
+
+forest_plot <- ggplot(data = dat_forest_plot, 
+                      aes(x=estimate, 
+                          y=fct_reorder(gene_symbol, estimate), 
+                          xmin = conf.low, 
+                          xmax = conf.high,
+                          color = signature_251)) +
+  geom_errorbarh() +
+  geom_point() +
+  scale_color_manual(values = c("Yes" = "royalblue", 
+                                "No" = "gray")) +
+  labs(x = "Estimates (95% CIs)", 
+       y = "", 
+       title = "Genes Associated with Tuberculosis in HIV patients") +
+  theme_minimal(base_size = 14) + 
+  labs(x = "Estimates (95% CIs)",
+       y = "Genes",
+       title = "TB Associated Genes",
+       subtitle = str_c("Genes Significantly Associated with Tuberculosis in HIV patients",
+                        "\n",
+                        ""),
+       color = "Genes in SVM 251 Signature",
+       caption = "Data from Dawany et al. (2014)") +
+  theme(axis.text.x = element_text(color = "black", 
+                                   size = 12),
+        axis.text.y = element_text(color = "black", 
+                                   size = 8),
+        axis.title = element_text(face="bold"),
+        plot.caption = element_text(face = "italic"),
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 10),
+        legend.position = "bottom")
+
+ggsave("../results/forest_plot.png", plot = forest_plot) 
+show(forest_plot)
+```
+
+We see that most genes are down-regulated.
+
+### Volcano Plot
+
+A volcano plot is generated to show significance of the genes as a function of the gene expression estimates.
+
+```{r}
+#| label: 06_volcano plot
+dat_volcano_plot <- dat_estimates |> 
+  mutate(gene_labels = case_when(
+    significant == "Yes" & signature_251 == "Yes" ~ gene_symbol, 
+                                 TRUE ~ "")) 
+
+volcano_plot <- ggplot(data = dat_volcano_plot, 
+                       aes(x = estimate,
+                           y = -log10(p.value), 
+                           color = significant,
+                           label = gene_labels
+                           )) +
+  geom_point(aes(alpha = 0.7)) +
+  geom_point(data=dat_volcano_plot |> 
+               filter(signature_251 == "Yes"),
+             pch=21,
+             size=2.5,
+             colour="black") +
+  scale_color_manual(values = c("Yes" = "royalblue", 
+                                "No" = "gray")) +
+  theme_minimal(base_size = 16) + 
+  labs(x = "Estimates",
+       y = "-log10(p)",
+       title = "Genes Associated with Tuberculosis",
+       subtitle = str_c("Genes highlighted in blue were significant after multiple",
+                        "\n",
+                        "testing correction."),
+       caption = "Data from Dawany et al. (2014)") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(color = "black", 
+                                   size = 14),
+        axis.text.y = element_text(color = "black", 
+                                   size = 14),
+        axis.title = element_text(face="bold"),
+        plot.caption = element_text(face = "italic"),
+        legend.text = element_text(size = 14)) +
+  geom_text_repel(size = 2, 
+                  max.overlaps = 30) 
+
+
+ggsave("../results/volcano_plot.png",plot = volcano_plot)  
+```
+
