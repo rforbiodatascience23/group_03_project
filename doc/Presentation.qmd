@@ -1,5 +1,5 @@
 ---
-title: "Gene expression analysis of M. tuberculosis in patients with and without HIV co-infection"
+title: "Gene expression analysis of HIV patients with and without M. tuberculosis co-infection"
 format:
   revealjs:
       embed-resources: true
