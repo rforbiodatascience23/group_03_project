@@ -78,32 +78,61 @@ Quantile Normalization:
 ![](../results/normalized_expr.png){.absolute top="100" left="600" width="550" height="550"}
 
 ## Results - PCA {.smaller}
+::: columns
+::: {.column width="50%"}
+Variance explained by the principal components
 
 -   First PC explains 15% of the variance
 
 -   31 PCs needed to explain 90% of variance
 
-![](../results/var_explained.png){.absolute top="100" left="550" width="600" height="550"}
+-   Difficult to compress 47.000 onto few PCs
+
+:::
+:::
+
+![](../results/var_explained.png){.absolute top="100" left="500" width="600" height="550"}
 
 ## Results - PCA {.smaller}
+::: columns
+::: {.column width="50%"}
 
--   Slight partition of disease state on PC1
--   No clear partition of gender
+Scatter plot of projected observations onto PC1 and PC2
 
-![](../results/scatter_pc1_pc2.png){.absolute top="100" left="550" width="600" height="550"}
+-   Slight division of disease state on PC1
+
+-   No clear division of gender
+
+-   Need for further analysis of disease state
+
+:::
+:::
+
+![](../results/scatter_pc1_pc2.png){.absolute top="100" left="500" width="600" height="550"}
 
 ## Results - Linear Regression {.smaller}
+
+::: columns
+::: {.column width="50%"}
 
 Forest plot
 
--   Most significant genes are downregulated
+-   Most significant genes are down regulated
 
-![](../results/forest_plot.png){.absolute top="100" left="250" width="600" height="550"}
+:::
+:::
+
+![](../results/forest_plot.png){.absolute top="100" left="500" width="600" height="550"}
 
 ## Results - Linear Regression {.smaller}
 
+::: columns
+::: {.column width="50%"}
 Volcano plot
 
 -   None of the significant genes are among the Tuberculosis signature
+:::
+:::
 
-![](../results/volcano_plot.png){.absolute top="100" left="250" width="600" height="550"}
+
+![](../results/volcano_plot.png){.absolute top="100" left="500" width="600" height="550"}
