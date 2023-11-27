@@ -39,7 +39,7 @@ dat_meta <- dat_clean |>
 
 The purpose of normalization is to minimize technical variability such that the remaining variation can be explained by biological differences. Technical variation can occur because of preparation differences or differences in the production of the microarrays and the processing of the arrays (for instance scanner differences). A general strategy is to re-distribute signal intensities across all samples such that they now all have the same distribution in order to compare the data from multiple samples.
 
-The gene expression levels in the cleaned data are normalized by quantile normalization implemented in the function `r normalize.quantiles()`. This ensures that expression levels can be compared between patients in the data set. The algorithm is as follows:
+The gene expression levels in the cleaned data are normalized by quantile normalization implemented in the function "r normalize.quantiles()". This ensures that expression levels can be compared between patients in the data set. The algorithm is as follows:
 
 1.  Sort the the expression levels for each patient.
 
