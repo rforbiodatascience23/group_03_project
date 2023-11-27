@@ -74,6 +74,10 @@ Quantile Normalization:
 
 ![](../results/non_normalized_expr.png){.absolute top="100" left="0" width="550" height="550"} ![](../results/normalized_expr.png){.absolute top="100" left="600" width="550" height="550"}
 
+## Methods {.smaller}
+![](PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"}
+![](Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
+
 ## Results - PCA {.smaller}
 
 ::: columns
@@ -113,7 +117,6 @@ Forest plot
 :::
 
 ![](../results/forest_plot.png){.absolute top="100" left="500" width="600" height="550"}
-
 
 ## Results - Linear Regression {.smaller}
 
