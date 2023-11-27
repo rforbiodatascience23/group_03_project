@@ -100,9 +100,7 @@ dat_meta <- dat_meta |>
          gender = str_extract(string = gender,
                               pattern = "Female|Male"),
          disease_state = str_extract(string = disease_state,
-                              pattern = "HIV/TB|HIV")) |> 
-   mutate(gender = factor(gender),
-         disease_state = factor(disease_state))
+                              pattern = "HIV/TB|HIV"))
 dat_meta |> 
   sample_n(10)
 ```
