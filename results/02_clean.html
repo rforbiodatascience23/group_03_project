@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>02 CLEAN</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="02_clean_files/libs/clipboard/clipboard.min.js"></script>
+<script src="02_clean_files/libs/quarto-html/quarto.js"></script>
+<script src="02_clean_files/libs/quarto-html/popper.min.js"></script>
+<script src="02_clean_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="02_clean_files/libs/quarto-html/anchor.min.js"></script>
+<link href="02_clean_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="02_clean_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="02_clean_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="02_clean_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="02_clean_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">02 CLEAN</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>Load required packages.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"tidyverse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Load gene expression and meta data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"../data/01_dat_load_expr.tsv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"../data/01_dat_load_meta.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-wrangling-i" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling-i">Data Wrangling I</h2>
+<p>In this section, variable of gene expression data and meta data are variables are cleaned separately.</p>
+<section id="gene-expression-data" class="level3">
+<h3 class="anchored" data-anchor-id="gene-expression-data">Gene Expression Data</h3>
+<p>In the following the gene expression data is inspected, cleaned and simplified.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 89
+   ID_REF       AAA0VKQN.12_18.Mar.2009 Detection.Pval AAA0W22R.11_16.Apr.2009
+   &lt;chr&gt;                          &lt;dbl&gt;          &lt;dbl&gt;                   &lt;dbl&gt;
+ 1 ILMN_1662484                    149.        0.873                      103.
+ 2 ILMN_3228788                    195.        0.726                      109.
+ 3 ILMN_1748899                    301.        0.210                      131.
+ 4 ILMN_1670272                   3717.        0                         1576.
+ 5 ILMN_3220934                    506.        0                          258.
+ 6 ILMN_1720137                    453.        0                          149.
+ 7 ILMN_1656822                    868.        0                          390.
+ 8 ILMN_1812877                    378.        0.00649                    175.
+ 9 ILMN_1763989                    915.        0                          542.
+10 ILMN_1756767                    543.        0                          188.
+# ℹ 85 more variables: Detection.Pval.1 &lt;dbl&gt;, AAA0W22R.14_16.Apr.2009 &lt;dbl&gt;,
+#   Detection.Pval.2 &lt;dbl&gt;, BAA0V9SR.15_25.Feb.2009 &lt;dbl&gt;,
+#   Detection.Pval.3 &lt;dbl&gt;, BAA0W3BM.11_20.Apr.2009 &lt;dbl&gt;,
+#   Detection.Pval.4 &lt;dbl&gt;, BAA0W69B.10_29.Apr.2009 &lt;dbl&gt;,
+#   Detection.Pval.5 &lt;dbl&gt;, BAA0WVPG.10_04.Jun.2009 &lt;dbl&gt;,
+#   Detection.Pval.6 &lt;dbl&gt;, CAA0Q3CK.13_24.Apr.2008 &lt;dbl&gt;,
+#   Detection.Pval.7 &lt;dbl&gt;, CAA0W4LJ.15_23.Apr.2009 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>From the inspection, it is seen that the data contain both gene expressions and p values. The detected p values are removed such that the gene expression data only consists of the gene expressions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="ot">&lt;-</span> dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="at">match =</span> <span class="st">"Detection.Pval"</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 45
+   ID_REF   AAA0VKQN.12_18.Mar.2…¹ AAA0W22R.11_16.Apr.2…² AAA0W22R.14_16.Apr.2…³
+   &lt;chr&gt;                     &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;
+ 1 ILMN_17…                   243.                  143.                    236.
+ 2 ILMN_17…                   152.                   81.4                   142.
+ 3 ILMN_16…                   401.                  190.                    316.
+ 4 ILMN_22…                   374.                  161.                    333.
+ 5 ILMN_17…                   145.                   82.6                   118.
+ 6 ILMN_32…                   330.                  177.                    374.
+ 7 ILMN_16…                   208.                  112.                    189.
+ 8 ILMN_31…                   184.                  132.                    229.
+ 9 ILMN_22…                  1141.                  685.                   1089.
+10 ILMN_16…                  1828.                  840.                   1482.
+# ℹ abbreviated names: ¹​AAA0VKQN.12_18.Mar.2009, ²​AAA0W22R.11_16.Apr.2009,
+#   ³​AAA0W22R.14_16.Apr.2009
+# ℹ 41 more variables: BAA0V9SR.15_25.Feb.2009 &lt;dbl&gt;,
+#   BAA0W3BM.11_20.Apr.2009 &lt;dbl&gt;, BAA0W69B.10_29.Apr.2009 &lt;dbl&gt;,
+#   BAA0WVPG.10_04.Jun.2009 &lt;dbl&gt;, CAA0Q3CK.13_24.Apr.2008 &lt;dbl&gt;,
+#   CAA0W4LJ.15_23.Apr.2009 &lt;dbl&gt;, CAA0W4LT.13_23.Apr.2009 &lt;dbl&gt;,
+#   DAA0PFCT.11_17.Jan.2008 &lt;dbl&gt;, DAA0V9RP.16_25.Feb.2009 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>Column names are simplified as the date is saved in the meta data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>() <span class="ot">=</span> <span class="fu">str_extract</span>(<span class="at">string =</span> <span class="fu">colnames</span>(dat_expr),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">pattern =</span> <span class="st">"^[A-Z0-9]+</span><span class="sc">\\</span><span class="st">.?[0-9]*"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 45
+   ID    AAA0VKQN.12 AAA0W22R.11 AAA0W22R.14 BAA0V9SR.15 BAA0W3BM.11 BAA0W69B.10
+   &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+ 1 ILMN…        158.        69.1        138.        175.        142.        91.3
+ 2 ILMN…        268.       148.         224.        264.        226.       116. 
+ 3 ILMN…        296.       143.         242.        287.        262.       143. 
+ 4 ILMN…        293.       178.         259.        288.        363.       184. 
+ 5 ILMN…        817.       360.         567.        909.        833.       331. 
+ 6 ILMN…        952.       367.         440.       1110.        755.       379. 
+ 7 ILMN…        317.       155.         297.        334.        316.       142. 
+ 8 ILMN…        197.       118.         180.        206.        230.       103. 
+ 9 ILMN…       1756.       962.        1837.       2355.       1814.      1224. 
+10 ILMN…        430.       161.         313.        359.        294.       171. 
+# ℹ 38 more variables: BAA0WVPG.10 &lt;dbl&gt;, CAA0Q3CK.13 &lt;dbl&gt;, CAA0W4LJ.15 &lt;dbl&gt;,
+#   CAA0W4LT.13 &lt;dbl&gt;, DAA0PFCT.11 &lt;dbl&gt;, DAA0V9RP.16 &lt;dbl&gt;, DAA0VD27.11 &lt;dbl&gt;,
+#   FAA0W22D.13 &lt;dbl&gt;, HAA0W3B8.14 &lt;dbl&gt;, HAA0W3R9.13 &lt;dbl&gt;, JAA0P0DQ.11 &lt;dbl&gt;,
+#   JAA0W223.10 &lt;dbl&gt;, KAA0PBTZ.17 &lt;dbl&gt;, KAA0Q3QH.14 &lt;dbl&gt;, AAA0WVKX.11 &lt;dbl&gt;,
+#   EAA0VKQY.17 &lt;dbl&gt;, JAA0WVMP.13 &lt;dbl&gt;, AAA0KHPN.10 &lt;dbl&gt;, AAA0RWJ0.14 &lt;dbl&gt;,
+#   AAA0Z4D1.15 &lt;dbl&gt;, AAA0ZSJX.10 &lt;dbl&gt;, BAA0YXVB.12 &lt;dbl&gt;, BAA0ZC4J.13 &lt;dbl&gt;,
+#   BAA0ZXTF.11 &lt;dbl&gt;, CAA0ZN6L.12 &lt;dbl&gt;, DAA0Z4CR.10 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="meta-data" class="level3">
+<h3 class="anchored" data-anchor-id="meta-data">Meta Data</h3>
+<p>In the following the meta data is inspected, relevant columns are extracted, renamed and simplified</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dat_meta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "title"                   "geo_accession"          
+ [3] "status"                  "submission_date"        
+ [5] "last_update_date"        "type"                   
+ [7] "channel_count"           "source_name_ch1"        
+ [9] "organism_ch1"            "characteristics_ch1"    
+[11] "characteristics_ch1.1"   "characteristics_ch1.2"  
+[13] "molecule_ch1"            "extract_protocol_ch1"   
+[15] "label_ch1"               "label_protocol_ch1"     
+[17] "taxid_ch1"               "hyb_protocol"           
+[19] "scan_protocol"           "description"            
+[21] "description.1"           "data_processing"        
+[23] "platform_id"             "contact_name"           
+[25] "contact_email"           "contact_phone"          
+[27] "contact_laboratory"      "contact_institute"      
+[29] "contact_address"         "contact_city"           
+[31] "contact_state"           "contact_zip.postal_code"
+[33] "contact_country"         "supplementary_file"     
+[35] "data_row_count"          "disease.state.ch1"      
+[37] "gender.ch1"              "sample.type.ch1"        </code></pre>
+</div>
+</div>
+<p>We are interested in keeping ‘title’, ‘geo_accession’, and ‘description.1’. The last mentioned column is the identifier refering to each sample found in the gene expression data. Furthermore, we want to extract information about gender and disease state described by ‘characteristics_ch1’ and ‘characteristics_ch1.2’. This information is also found in the variables ‘gender.ch1’ and ‘disease.state.ch1’ in a nicer format. We chose to work with the first mentioned columns for educational purposes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="ot">&lt;-</span> dat_meta <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(title,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                geo_accession,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                characteristics_ch1,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                characteristics_ch1<span class="fl">.2</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                description<span class="fl">.1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">"patient_n"</span> <span class="ot">=</span> title,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                <span class="st">"gender"</span> <span class="ot">=</span> characteristics_ch1,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">"disease_state"</span> <span class="ot">=</span> characteristics_ch1<span class="fl">.2</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">"identifier"</span> <span class="ot">=</span> description<span class="fl">.1</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="sc">|&gt;</span> </span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(patient_n, </span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>         gender, </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>         disease_state,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>         identifier) <span class="sc">|&gt;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 4
+   patient_n                     gender         disease_state         identifier
+   &lt;chr&gt;                         &lt;chr&gt;          &lt;chr&gt;                 &lt;chr&gt;     
+ 1 HIV/TB co-infected patient 13 gender: Female disease state: HIV/TB HAA0QL3W-…
+ 2 HIV/TB co-infected patient 20 gender: Male   disease state: HIV/TB KAA0ZQ5C-…
+ 3 HIV infected patient 14       gender: Female disease state: HIV o… HAA0W3B8-…
+ 4 HIV/TB co-infected patient 11 gender: Male   disease state: HIV/TB FAA0ZVHT-…
+ 5 HIV/TB co-infected patient 14 gender: Female disease state: HIV/TB HAA0Z4Z0-…
+ 6 HIV/TB co-infected patient 5  gender: Female disease state: HIV/TB BAA0YXVB-…
+ 7 HIV infected patient 15       gender: Female disease state: HIV o… HAA0W3R9-…
+ 8 HIV/TB co-infected patient 8  gender: Male   disease state: HIV/TB CAA0ZN6L-…
+ 9 HIV/TB co-infected patient 12 gender: Male   disease state: HIV/TB GAA0S8NL-…
+10 HIV infected patient 11       gender: Female disease state: HIV o… DAA0V9RP-…</code></pre>
+</div>
+</div>
+<p>Simplify the columns ‘patient’, ‘gender’ and ‘disease state’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="ot">&lt;-</span> dat_meta <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">patient_n =</span> <span class="fu">str_extract</span>(<span class="at">string =</span> patient_n,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">pattern =</span> <span class="st">"[0-9]+_?[0-9]?"</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">gender =</span> <span class="fu">str_extract</span>(<span class="at">string =</span> gender,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">pattern =</span> <span class="st">"Female|Male"</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">disease_state =</span> <span class="fu">str_extract</span>(<span class="at">string =</span> disease_state,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                              <span class="at">pattern =</span> <span class="st">"HIV/TB|HIV"</span>))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="sc">|&gt;</span> </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 5
+   patient_n geo_accession gender disease_state identifier             
+   &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;                  
+ 1 18        GSM1230920    Female HIV           KAA0PBTZ-17_06-Mar-2008
+ 2 15        GSM1230939    Female HIV/TB        JAA0Q3QZ-15_24-Apr-2008
+ 3 7         GSM1230909    Female HIV           CAA0Q3CK-13_24-Apr-2008
+ 4 5         GSM1230907    Female HIV           BAA0W69B-10_29-Apr-2009
+ 5 11        GSM1230913    Female HIV           DAA0V9RP-16_25-Feb-2009
+ 6 18        GSM1230942    Female HIV/TB        KAA0Z0GV-10_18-Nov-2009
+ 7 10        GSM1230912    Female HIV           DAA0PFCT-11_17-Jan-2008
+ 8 9         GSM1230911    Female HIV           CAA0W4LT-13_23-Apr-2009
+ 9 5         GSM1230929    Female HIV/TB        BAA0YXVB-12_12-Nov-2009
+10 22        GSM1230924    Female HIV           JAA0WVMP-13_04-Jun-2009</code></pre>
+</div>
+</div>
+<p>The column ‘identifier’ in the meta data contain the names of the genes described in the expression data. In the following, the ‘identifier’ is corrected to mimic the genes of the expression data in order to join the two data sets later on.</p>
+<p>The ‘identifier’ in the meta data is split into two columns to simplify the identifier but still keep the information about the dates.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="ot">&lt;-</span> dat_meta <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(<span class="at">col =</span> identifier,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"identifier"</span>, <span class="st">"date"</span>),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="sc">|&gt;</span> </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 6
+   patient_n geo_accession gender disease_state identifier  date       
+   &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;      
+ 1 7         GSM1230931    Female HIV/TB        BAA0ZXTF-11 08-Feb-2010
+ 2 8         GSM1230932    Male   HIV/TB        CAA0ZN6L-12 13-Jan-2010
+ 3 20        GSM1230944    Male   HIV/TB        KAA0ZQ5C-11 19-Jan-2010
+ 4 22        GSM1230924    Female HIV           JAA0WVMP-13 04-Jun-2009
+ 5 2_1       GSM1230903    Female HIV           AAA0W22R-11 16-Apr-2009
+ 6 5         GSM1230929    Female HIV/TB        BAA0YXVB-12 12-Nov-2009
+ 7 9         GSM1230933    Male   HIV/TB        DAA0Z4CR-10 25-Nov-2009
+ 8 8         GSM1230910    Male   HIV           CAA0W4LJ-15 23-Apr-2009
+ 9 7         GSM1230909    Female HIV           CAA0Q3CK-13 24-Apr-2008
+10 21        GSM1230923    Male   HIV           EAA0VKQY-17 18-Mar-2009</code></pre>
+</div>
+</div>
+<p>In the gene expression data the gene names contain “-” while the ‘identifier’ in the meta data contain “.”. Replace the “-” in the meta data to streamline the two data sets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dat_meta <span class="ot">&lt;-</span> dat_meta <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">identifier =</span> <span class="fu">str_replace_all</span>(<span class="at">string =</span> identifier,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">pattern =</span> <span class="st">"-"</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">replacement =</span> <span class="st">"."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Check if there is consensus between the ‘identifiers’ in the meta data and the column names (gene names) of the gene expression data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>meta_identifier <span class="ot">&lt;-</span> dat_meta <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(identifier)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(<span class="fu">colnames</span>(dat_expr), meta_identifier)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ID"</code></pre>
+</div>
+</div>
+<p>The only difference between ‘identifier’ in meta data and column names of the gene expression data is the ‘ID’ column for the genes as expected.</p>
+</section>
+</section>
+<section id="data-wrangling-ii" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling-ii">Data Wrangling II</h2>
+<p>In the following steps, the format of the data will be changed. Furthermore, we wish to join the gene expression data and the meta data.</p>
+<section id="data-pivoting" class="level3">
+<h3 class="anchored" data-anchor-id="data-pivoting">Data Pivoting</h3>
+<p>The gene expression data is transposed by pivoting sample ‘identifier’ to long format and gene ‘ID’ to wide format. The data should be tidy, which requires each observation, that is, each patient, must be a row, with the variables as columns.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="ot">&lt;-</span> dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span>ID,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"identifier"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"count"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> ID,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from =</span> count)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>dat_expr <span class="sc">|&gt;</span> </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 47,232
+   identifier  ILMN_1762337 ILMN_2055271 ILMN_1736007 ILMN_2383229 ILMN_1806310
+   &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+ 1 CAA0W4LJ.15         305.         335.         343.         293.         282.
+ 2 FAA0W22D.13         154.         169.         172.         133.         142.
+ 3 EAA0ZNH3.13         190.         196.         182.         199.         114.
+ 4 AAA0WVKX.11         241.         225.         231.         227.         224.
+ 5 JAA0Q3QZ.15         179.         162.         150.         140.         138.
+ 6 KAA0Q3QH.14         115.         122.         123.         131.         113.
+ 7 HAA0W3R9.13         315.         321.         277.         259.         250.
+ 8 KAA0PBTZ.17         216.         260.         218.         224.         180.
+ 9 JAA103SD.11         126.         163.         132.         143.         123.
+10 FAA0ZVHT.14         282.         316.         270.         262.         238.
+# ℹ 47,226 more variables: ILMN_1779670 &lt;dbl&gt;, ILMN_1653355 &lt;dbl&gt;,
+#   ILMN_1717783 &lt;dbl&gt;, ILMN_1705025 &lt;dbl&gt;, ILMN_1814316 &lt;dbl&gt;,
+#   ILMN_2359168 &lt;dbl&gt;, ILMN_1731507 &lt;dbl&gt;, ILMN_1787689 &lt;dbl&gt;,
+#   ILMN_3241953 &lt;dbl&gt;, ILMN_1745607 &lt;dbl&gt;, ILMN_2136495 &lt;dbl&gt;,
+#   ILMN_1668111 &lt;dbl&gt;, ILMN_2295559 &lt;dbl&gt;, ILMN_1735045 &lt;dbl&gt;,
+#   ILMN_1680754 &lt;dbl&gt;, ILMN_2375184 &lt;dbl&gt;, ILMN_1659452 &lt;dbl&gt;,
+#   ILMN_1767388 &lt;dbl&gt;, ILMN_1675204 &lt;dbl&gt;, ILMN_1673870 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="data-joining" class="level3">
+<h3 class="anchored" data-anchor-id="data-joining">Data Joining</h3>
+<p>The meta data and the count data should be merge such that all data about a patient is contained in one tibble. Meta data should be in the first columns followed by gene variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>dat_clean <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(<span class="at">x =</span> dat_expr,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">y =</span> dat_meta,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">by =</span> <span class="st">"identifier"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">colnames</span>(dat_meta))</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>dat_clean <span class="sc">|&gt;</span> </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 47,237
+   patient_n geo_accession gender disease_state identifier  date    ILMN_1762337
+   &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt;
+ 1 12        GSM1230914    Female HIV           DAA0VD27.11 04-Mar…         182.
+ 2 4         GSM1230928    Female HIV/TB        AAA0ZSJX.10 26-Jan…         274.
+ 3 3         GSM1230927    Male   HIV/TB        AAA0Z4D1.15 25-Nov…         318.
+ 4 5         GSM1230907    Female HIV           BAA0W69B.10 29-Apr…         158.
+ 5 19        GSM1230921    Male   HIV           KAA0Q3QH.14 24-Apr…         115.
+ 6 14        GSM1230938    Female HIV/TB        HAA0Z4Z0.19 26-Nov…         291.
+ 7 6         GSM1230930    Male   HIV/TB        BAA0ZC4J.13 07-Dec…         206.
+ 8 22        GSM1230924    Female HIV           JAA0WVMP.13 04-Jun…         260.
+ 9 5         GSM1230929    Female HIV/TB        BAA0YXVB.12 12-Nov…         324.
+10 7         GSM1230909    Female HIV           CAA0Q3CK.13 24-Apr…         254.
+# ℹ 47,230 more variables: ILMN_2055271 &lt;dbl&gt;, ILMN_1736007 &lt;dbl&gt;,
+#   ILMN_2383229 &lt;dbl&gt;, ILMN_1806310 &lt;dbl&gt;, ILMN_1779670 &lt;dbl&gt;,
+#   ILMN_1653355 &lt;dbl&gt;, ILMN_1717783 &lt;dbl&gt;, ILMN_1705025 &lt;dbl&gt;,
+#   ILMN_1814316 &lt;dbl&gt;, ILMN_2359168 &lt;dbl&gt;, ILMN_1731507 &lt;dbl&gt;,
+#   ILMN_1787689 &lt;dbl&gt;, ILMN_3241953 &lt;dbl&gt;, ILMN_1745607 &lt;dbl&gt;,
+#   ILMN_2136495 &lt;dbl&gt;, ILMN_1668111 &lt;dbl&gt;, ILMN_2295559 &lt;dbl&gt;,
+#   ILMN_1735045 &lt;dbl&gt;, ILMN_1680754 &lt;dbl&gt;, ILMN_2375184 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="handling-replicates" class="level3">
+<h3 class="anchored" data-anchor-id="handling-replicates">Handling Replicates</h3>
+<p>There are two technical replicates available for one patient, namely patient 2_1 and 2_2 indicated by the ‘patient_n’ column. We wish to averaged the measurements for this patient for further analysis.</p>
+<p>First, the gene expression values for the replicates are extracted.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dat_rep <span class="ot">&lt;-</span> dat_clean <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(patient_n, <span class="st">"_"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">patient_n =</span> <span class="fu">str_extract</span>(<span class="at">string =</span> patient_n, </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">pattern =</span> <span class="st">"[0-9]+"</span>)) </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>dat_rep </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 47,237
+  patient_n geo_accession gender disease_state identifier  date     ILMN_1762337
+  &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;           &lt;dbl&gt;
+1 2         GSM1230903    Female HIV           AAA0W22R.11 16-Apr-…         158.
+2 2         GSM1230904    Female HIV           AAA0W22R.14 16-Apr-…         300.
+# ℹ 47,230 more variables: ILMN_2055271 &lt;dbl&gt;, ILMN_1736007 &lt;dbl&gt;,
+#   ILMN_2383229 &lt;dbl&gt;, ILMN_1806310 &lt;dbl&gt;, ILMN_1779670 &lt;dbl&gt;,
+#   ILMN_1653355 &lt;dbl&gt;, ILMN_1717783 &lt;dbl&gt;, ILMN_1705025 &lt;dbl&gt;,
+#   ILMN_1814316 &lt;dbl&gt;, ILMN_2359168 &lt;dbl&gt;, ILMN_1731507 &lt;dbl&gt;,
+#   ILMN_1787689 &lt;dbl&gt;, ILMN_3241953 &lt;dbl&gt;, ILMN_1745607 &lt;dbl&gt;,
+#   ILMN_2136495 &lt;dbl&gt;, ILMN_1668111 &lt;dbl&gt;, ILMN_2295559 &lt;dbl&gt;,
+#   ILMN_1735045 &lt;dbl&gt;, ILMN_1680754 &lt;dbl&gt;, ILMN_2375184 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>The mean gene expression is calculated for each replicated patient.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dat_rep_mean <span class="ot">&lt;-</span> dat_rep <span class="sc">|&gt;</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(patient_n) <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="at">.cols =</span> <span class="fu">starts_with</span>(<span class="st">"ILMN"</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.fns =</span> mean,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `summarise()`.
+ℹ In argument: `across(.cols = starts_with("ILMN"), .fns = mean, na.rm =
+  TRUE)`.
+ℹ In group 1: `patient_n = "2"`.
+Caused by warning:
+! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
+Supply arguments directly to `.fns` through an anonymous function instead.
+
+  # Previously
+  across(a:b, mean, na.rm = TRUE)
+
+  # Now
+  across(a:b, \(x) mean(x, na.rm = TRUE))</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dat_rep_mean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 47,232
+  patient_n ILMN_1762337 ILMN_2055271 ILMN_1736007 ILMN_2383229 ILMN_1806310
+  &lt;chr&gt;            &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+1 2                 229.         209.         200.         192.         189.
+# ℹ 47,226 more variables: ILMN_1779670 &lt;dbl&gt;, ILMN_1653355 &lt;dbl&gt;,
+#   ILMN_1717783 &lt;dbl&gt;, ILMN_1705025 &lt;dbl&gt;, ILMN_1814316 &lt;dbl&gt;,
+#   ILMN_2359168 &lt;dbl&gt;, ILMN_1731507 &lt;dbl&gt;, ILMN_1787689 &lt;dbl&gt;,
+#   ILMN_3241953 &lt;dbl&gt;, ILMN_1745607 &lt;dbl&gt;, ILMN_2136495 &lt;dbl&gt;,
+#   ILMN_1668111 &lt;dbl&gt;, ILMN_2295559 &lt;dbl&gt;, ILMN_1735045 &lt;dbl&gt;,
+#   ILMN_1680754 &lt;dbl&gt;, ILMN_2375184 &lt;dbl&gt;, ILMN_1659452 &lt;dbl&gt;,
+#   ILMN_1767388 &lt;dbl&gt;, ILMN_1675204 &lt;dbl&gt;, ILMN_1673870 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>The metadata for each replicated patient is extracted. The ‘geo accession’ and ‘identifer’ is collapsed, meaning that the new ‘geo accession’ and ‘identifer’ for the replicated patient is a combination of the originals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>cols_rep_meta_collapesed <span class="ot">&lt;-</span> dat_rep <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(patient_n) <span class="sc">|&gt;</span> </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">geo_accession =</span> <span class="fu">str_c</span>(geo_accession, <span class="at">collapse =</span> <span class="st">"_"</span>),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">identifier =</span> <span class="fu">str_c</span>(identifier, <span class="at">collapse =</span> <span class="st">"_"</span>))</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>cols_rep_meta_collapesed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 47,237
+# Groups:   patient_n [1]
+  patient_n geo_accession     gender disease_state identifier date  ILMN_1762337
+  &lt;chr&gt;     &lt;chr&gt;             &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;        &lt;dbl&gt;
+1 2         GSM1230903_GSM12… Female HIV           AAA0W22R.… 16-A…         158.
+2 2         GSM1230903_GSM12… Female HIV           AAA0W22R.… 16-A…         300.
+# ℹ 47,230 more variables: ILMN_2055271 &lt;dbl&gt;, ILMN_1736007 &lt;dbl&gt;,
+#   ILMN_2383229 &lt;dbl&gt;, ILMN_1806310 &lt;dbl&gt;, ILMN_1779670 &lt;dbl&gt;,
+#   ILMN_1653355 &lt;dbl&gt;, ILMN_1717783 &lt;dbl&gt;, ILMN_1705025 &lt;dbl&gt;,
+#   ILMN_1814316 &lt;dbl&gt;, ILMN_2359168 &lt;dbl&gt;, ILMN_1731507 &lt;dbl&gt;,
+#   ILMN_1787689 &lt;dbl&gt;, ILMN_3241953 &lt;dbl&gt;, ILMN_1745607 &lt;dbl&gt;,
+#   ILMN_2136495 &lt;dbl&gt;, ILMN_1668111 &lt;dbl&gt;, ILMN_2295559 &lt;dbl&gt;,
+#   ILMN_1735045 &lt;dbl&gt;, ILMN_1680754 &lt;dbl&gt;, ILMN_2375184 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>A new column called ‘modified’ is added to the meta data. The column describes if the patient has been modified (eg. the gene expression represent a mean of multiple gene expressions for one patient).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>cols_rep_meta <span class="ot">&lt;-</span> cols_rep_meta_collapesed <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">"ILMN"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">mutate</span>(<span class="at">modified =</span> <span class="dv">1</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>cols_rep_meta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 7
+# Groups:   patient_n [1]
+  patient_n geo_accession         gender disease_state identifier date  modified
+  &lt;chr&gt;     &lt;chr&gt;                 &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;
+1 2         GSM1230903_GSM1230904 Female HIV           AAA0W22R.… 16-A…        1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dat_clean <span class="ot">&lt;-</span> dat_clean <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">modified =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Combine the new meta data with the mean gene expression for the each replicated patient.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>dat_rep_clean <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(<span class="at">x =</span> cols_rep_meta, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">y =</span> dat_rep_mean,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">by =</span> <span class="st">"patient_n"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, the new data for th replicated patients are combines with the data for the non-replicated patients to form a clean data set without replicates.</p>
+<p>As the patient_n variable is no longer informative, this column is removed for all patients.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>dat_clean <span class="ot">&lt;-</span> <span class="fu">full_join</span>(dat_clean, dat_rep_clean) <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(modified, <span class="at">.after =</span> date) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(patient_n, <span class="st">"_"</span>)) <span class="sc">|&gt;</span>  </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span>patient_n) <span class="sc">|&gt;</span> </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(disease_state) </span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>dat_clean <span class="sc">|&gt;</span> </span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 47,237
+   geo_accession gender disease_state identifier  date     modified ILMN_1762337
+   &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;       &lt;dbl&gt;        &lt;dbl&gt;
+ 1 GSM1230943    Male   HIV/TB        KAA0ZMKX.10 11-Jan-…        0         338.
+ 2 GSM1230910    Male   HIV           CAA0W4LJ.15 23-Apr-…        0         305.
+ 3 GSM1230908    Female HIV           BAA0WVPG.10 04-Jun-…        0         157.
+ 4 GSM1230912    Female HIV           DAA0PFCT.11 17-Jan-…        0         287.
+ 5 GSM1230945    Male   HIV/TB        EAA0ZNH3.13 13-Jan-…        0         190.
+ 6 GSM1230923    Male   HIV           EAA0VKQY.17 18-Mar-…        0         318.
+ 7 GSM1230937    Female HIV/TB        HAA0QL3W.13 29-May-…        0         222.
+ 8 GSM1230939    Female HIV/TB        JAA0Q3QZ.15 24-Apr-…        0         179.
+ 9 GSM1230940    Female HIV/TB        JAA103SD.11 25-Feb-…        0         126.
+10 GSM1230918    Female HIV           JAA0P0DQ.11 15-Feb-…        0         286.
+# ℹ 47,230 more variables: ILMN_2055271 &lt;dbl&gt;, ILMN_1736007 &lt;dbl&gt;,
+#   ILMN_2383229 &lt;dbl&gt;, ILMN_1806310 &lt;dbl&gt;, ILMN_1779670 &lt;dbl&gt;,
+#   ILMN_1653355 &lt;dbl&gt;, ILMN_1717783 &lt;dbl&gt;, ILMN_1705025 &lt;dbl&gt;,
+#   ILMN_1814316 &lt;dbl&gt;, ILMN_2359168 &lt;dbl&gt;, ILMN_1731507 &lt;dbl&gt;,
+#   ILMN_1787689 &lt;dbl&gt;, ILMN_3241953 &lt;dbl&gt;, ILMN_1745607 &lt;dbl&gt;,
+#   ILMN_2136495 &lt;dbl&gt;, ILMN_1668111 &lt;dbl&gt;, ILMN_2295559 &lt;dbl&gt;,
+#   ILMN_1735045 &lt;dbl&gt;, ILMN_1680754 &lt;dbl&gt;, ILMN_2375184 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="write-data-to-file" class="level2">
+<h2 class="anchored" data-anchor-id="write-data-to-file">Write Data to File</h2>
+<p>The cleaned data is written as a tsv file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dat_clean <span class="sc">|&gt;</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write_tsv</span>(<span class="at">file =</span> <span class="st">"../data/02_dat_clean.tsv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

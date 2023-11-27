@@ -47,7 +47,7 @@ Keep it clean and tidy:
 :::
 
 ::: {.column width="50%"}
-![](original_paper.png){.absolute top="50" left="600" width="450" height="650"}
+![](../results/project_flow_chart.png){.absolute top="50" left="600" width="450" height="650"}
 :::
 :::
 
@@ -74,7 +74,7 @@ Quantile Normalization:
 
 ## Methods {.smaller}
 
-![](PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"} ![](Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
+![](../results/PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"} ![](../results/Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
 
 ## Results - PCA {.smaller}
 
