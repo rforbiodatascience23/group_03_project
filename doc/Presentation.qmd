@@ -5,7 +5,7 @@ format:
       embed-resources: true
       theme: simple
 editor: visual
-author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov"
+author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper s184324, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov s184344"
 logo: DTU-logo.png
 ---
 
