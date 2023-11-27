@@ -80,6 +80,8 @@ file.rename(from = "06_analysis_2.html",
 {{< include 06_analysis_2.qmd >}}
 
 ```{r}
+#| message: false
+#| output: false
 file.rename(from = "00_all.html",
             to = "../results/00_all.html")
 ```
