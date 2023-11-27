@@ -413,13 +413,12 @@ forest_plot <- ggplot(data = dat_forest_plot,
        color = "Genes in SVM 251 Signature",
        caption = "Data from Dawany et al. (2014)") +
   theme(axis.text.x = element_text(color = "black", 
-                                   size = 12),
+                                   size = 14),
         axis.text.y = element_text(color = "black", 
                                    size = 8),
         axis.title = element_text(face="bold"),
         plot.caption = element_text(face = "italic"),
-        legend.text = element_text(size = 10),
-        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 14),
         legend.position = "bottom")
 
 ggsave("../results/forest_plot.png", plot = forest_plot) 
