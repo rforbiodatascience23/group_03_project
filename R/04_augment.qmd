@@ -32,6 +32,7 @@ dat_expr <- dat_clean |>
   
 dat_meta <- dat_clean |> 
   dplyr::select(!starts_with("ILMN"))
+
 ```
 
 ## Normalization
@@ -50,13 +51,17 @@ The gene expression levels in the cleaned data are normalized by quantile normal
 
 ```{r}
 #| label: 04_Normalise dat_expr
+
 dat_expr_matrix <- as.matrix(t(dat_expr))
+
 colnames(dat_expr_matrix) <- dat_meta |> 
   pull(identifier) 
-dat_expr <- normalize.quantiles(dat_expr_matrix, 
+
+dat_expr <- normalize.quantiles(x = dat_expr_matrix,
                                 keep.names = TRUE) |>
   t() |> 
   as_tibble(rownames = NA)
+
 ```
 
 ## Log Transformation
