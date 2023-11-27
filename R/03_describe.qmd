@@ -99,6 +99,7 @@ summary_table <- dat_clean |>
          Disease = factor(disease_state)) |> 
   table1(x = formula(~ Gender | Disease))
 show(summary_table)
+
 ```
 
 From the above it is seen, that the gender of the HIV/TB co-infected patients is close to equal distributed between male and female, and that the gender of the HIV mono-infected is unequal distributed with 72% females and only 27% males.
