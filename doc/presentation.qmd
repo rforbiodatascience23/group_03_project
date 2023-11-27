@@ -6,7 +6,7 @@ format:
       theme: simple
 editor: visual
 author: "Group 3: Anne Skov-Johannessen s184330, Dea F. Skipper s184324, Helene B. L. Petersen s194699, Johanne B. Overgaard s194691 and Rebecca C. Grenov s184344"
-logo: DTU-logo.png
+logo: images/DTU-logo.png
 ---
 
 ## Introduction {.smaller}
@@ -29,13 +29,13 @@ Our aim:
 
 Reference: (Dawany, N.)
 
-![](original_paper.png){.absolute top="1" left="900" width="325" height="400"}
+![](images/original_paper.png){.absolute top="1" left="900" width="325" height="400"}
 
 ## Method {.smaller}
 
 ::: columns
 ::: {.column width="50%"}
-Data flow: ![](project_flow_chart.png){.absolute top="130" left="000" width="370" height="450"}
+Data flow: ![](images/project_flow_chart.png){.absolute top="130" left="000" width="370" height="450"}
 :::
 
 ::: {.column width="50%"}
@@ -61,7 +61,7 @@ Keep it clean and tidy:
 
 ## Methods {.smaller}
 
-![](PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"} ![](Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
+![](images/PCA_method.jpg){.absolute top="200" left="1" width="600" height="300"} ![](images/Linear_model_method.png){.absolute top="200" left="700" width="400" height="350"}
 
 ## Results - PCA {.smaller}
 
