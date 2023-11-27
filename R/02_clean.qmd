@@ -81,7 +81,7 @@ dat_meta <- dat_meta |>
                 "gender" = characteristics_ch1,
                 "disease_state" = characteristics_ch1.2,
                 "identifier" = description.1)
-
+  
 dat_meta |> 
   dplyr::select(patient_n, 
          gender, 
@@ -100,7 +100,9 @@ dat_meta <- dat_meta |>
          gender = str_extract(string = gender,
                               pattern = "Female|Male"),
          disease_state = str_extract(string = disease_state,
-                              pattern = "HIV/TB|HIV"))
+                              pattern = "HIV/TB|HIV")) |> 
+   mutate(gender = factor(gender),
+         disease_state = factor(disease_state))
 dat_meta |> 
   sample_n(10)
 ```
@@ -147,7 +149,7 @@ In the following steps, the format of the data will be changed. Furthermore, we 
 
 ### Data Pivoting
 
-The gene expression data is transposed by pivoting sample 'identifier' to long format and gene 'ID' to wide format. The data should be tidy, which requires each observation, that is, each patient, must be a row, with the variables as columns. 
+The gene expression data is transposed by pivoting sample 'identifier' to long format and gene 'ID' to wide format. The data should be tidy, which requires each observation, that is, each patient, must be a row, with the variables as columns.
 
 ```{r}
 #| label: 02_Pivot dat_expr
@@ -172,6 +174,9 @@ dat_clean <- inner_join(x = dat_expr,
                         y = dat_meta,
                         by = "identifier") |> 
   relocate(colnames(dat_meta))
+
+dat_clean |> 
+  sample_n(10)
 ```
 
 ### Handling Replicates
