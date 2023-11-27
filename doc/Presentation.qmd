@@ -21,7 +21,7 @@ Support vector machine to find 251-gene signature
 
 -   Genes involved in Immunological, Infectious and Inflammatory Disease
 
-Our aim:
+Our aim: 
 
 -   Explore genes with a significant expression enriched in HIV with TB co-infection
 
