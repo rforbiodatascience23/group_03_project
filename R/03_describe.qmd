@@ -98,11 +98,11 @@ The distribution of males and females for each patient group can also be summari
 
 ```{r}
 #| label: 03_Summary table
-summary_table <- dat_clean |>
+dat_clean |>
   mutate(Gender = factor(gender),
          Disease = factor(disease_state)) |> 
   table1(x = formula(~ Gender | Disease))
-show(summary_table)
+
 
 ```
 
