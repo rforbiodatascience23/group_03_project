@@ -15,6 +15,7 @@ library('tidyverse')
 library('broom')
 library("ggrepel")
 library("illuminaHumanv4.db")
+
 ```
 
 Load the augment data.
@@ -102,7 +103,7 @@ dat_estimates <- dat_estimates |>
          gene_symbol = unlist(gene_symbol))
 ```
 
-### Compare most significant genes with list of diagnostic genes from the 251 gene signature from the paper.
+### Compare most significant genes with list of diagnostic genes from the 251 gene signature from the paper (Dawany N.).
 
 Extract the significant genes with original gene ID
 
@@ -114,6 +115,7 @@ significant_genes <- dat_estimates |>
   pull()
 ```
 
+THe 251 signature genes for TB/HIV vs. HIV from the reference paper of the data (Dawany, N.) are copied from a docx file "List of the 251 gene TB-signature identified using SVM-RFE": "pone.0089925.s007.docx" available from the paper. We are aware, that it would be better to extract the information directly from the file for reproducability, but due to issues accesing the docx file and limited time, this solution is used.   
 ```{r}
 #| label: 06_compare significant genes with 251 signature
 signature_251_str <- c("DHRS4
@@ -392,7 +394,7 @@ dat_forest_plot <- dat_estimates |>
 
 forest_plot <- ggplot(data = dat_forest_plot, 
                       aes(x=estimate, 
-                          y=fct_reorder(gene_symbol, estimate), 
+                          y=fct_reorder(gene, estimate), 
                           xmin = conf.low, 
                           xmax = conf.high,
                           color = signature_251)) +
@@ -415,7 +417,7 @@ forest_plot <- ggplot(data = dat_forest_plot,
   theme(axis.text.x = element_text(color = "black", 
                                    size = 14),
         axis.text.y = element_text(color = "black", 
-                                   size = 8),
+                                   size = 7),
         axis.title = element_text(face="bold"),
         plot.caption = element_text(face = "italic"),
         legend.text = element_text(size = 14),
@@ -460,7 +462,7 @@ volcano_plot <- ggplot(data = dat_volcano_plot,
                         "\n",
                         "testing correction."),
        caption = "Data from Dawany et al. (2014)") +
-  theme(legend.position = "none",
+  theme(legend.position = "None",
         axis.text.x = element_text(color = "black", 
                                    size = 14),
         axis.text.y = element_text(color = "black", 
