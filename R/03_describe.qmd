@@ -1,10 +1,12 @@
 ---
-title: "03 DESCRIBE"
+title: "Gene Expression Analysis"
 format:
   html:
     embed-resources: true
 editor: visual
 ---
+
+# Describe data
 
 ## Setup
 

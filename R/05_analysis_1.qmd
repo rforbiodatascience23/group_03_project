@@ -1,10 +1,12 @@
 ---
-title: "05 ANALYSIS 1"
+title: "Gene Expression Analysis"
 format:
   html:
     embed-resources: true
 editor: visual
 ---
+
+# PCA analysis
 
 ## Setup
 

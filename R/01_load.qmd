@@ -1,5 +1,5 @@
 ---
-title: "01 LOAD"
+title: "Gene Expression Analysis"
 format:
   html:
     embed-resources: true

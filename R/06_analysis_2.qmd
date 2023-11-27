@@ -1,10 +1,12 @@
 ---
-title: "06 ANALYSIS 2"
+title: "Gene Expression Analysis"
 format:
   html:
     embed-resources: true
 editor: visual
 ---
+
+# Linear regression analysis
 
 ## Setup
 
@@ -117,7 +119,8 @@ significant_genes <- dat_estimates |>
   pull()
 ```
 
-THe 251 signature genes for TB/HIV vs. HIV from the reference paper of the data (Dawany, N.) are copied from a docx file "List of the 251 gene TB-signature identified using SVM-RFE": "pone.0089925.s007.docx" available from the paper. We are aware, that it would be better to extract the information directly from the file for reproducability, but due to issues accesing the docx file and limited time, this solution is used.   
+THe 251 signature genes for TB/HIV vs. HIV from the reference paper of the data (Dawany, N.) are copied from a docx file "List of the 251 gene TB-signature identified using SVM-RFE": "pone.0089925.s007.docx" available from the paper. We are aware, that it would be better to extract the information directly from the file for reproducability, but due to issues accesing the docx file and limited time, this solution is used.
+
 ```{r}
 #| label: 06_compare significant genes with 251 signature
 signature_251_str <- c("DHRS4

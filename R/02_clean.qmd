@@ -1,10 +1,12 @@
 ---
-title: "02 CLEAN"
+title: "Gene Expression Analysis"
 format:
   html:
     embed-resources: true
 editor: visual
 ---
+
+# Tidy data
 
 ## Setup
 
