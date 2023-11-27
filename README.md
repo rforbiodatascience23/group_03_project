@@ -12,6 +12,8 @@ Johanne B. Overgaard s194691, github: jobaov
 
 Rebecca C. Grenov s184344, github: RebeGr
 
+However, the statistics showed in Github insights are not reflected by the true contributions in this project. Several commits was done without being aware these was not tracked on our accounts. This results in more than 5 authors are reflected, because the rest are tracked as anonymous. This project has been done with everyone contributing equally.
+
 # File organisation
 
 This repository is organized with a data, doc, R and results folder. In data is a raw folder created with the data downloaded, which is obtained from Gene Expression Omnibus (GEO) under the accession number GSE50834. The rest of the data folder is filled with intermediary output files when running the scripts. The final data folder will contain two output files from 01_load.qmd, one file from 02_clean.qmd and one file from 04_augment.qmd. All output tsv files are named corresponding to the script number it is produced from.
