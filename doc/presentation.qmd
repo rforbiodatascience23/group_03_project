@@ -29,7 +29,7 @@ Our aim:
 
 Reference: (Dawany, N.)
 
-![](original_paper.png){.absolute top="1" left="900" width="350" height="450"}
+![](original_paper.png){.absolute top="1" left="900" width="325" height="400"}
 
 ## Method {.smaller}
 
@@ -53,15 +53,11 @@ Keep it clean and tidy:
 
 ## Methods {.smaller}
 
-![](../results/barplot_patient_group.png){.absolute top="50" left="200" width="700" height="650"}
+![](../results/barplot_patient_group.png){.absolute top="50" left="200" width="650" height="650"}
 
 ## Methods {.smaller}
 
-Normalization - minimize technical variability
-
-Log transformation - stabilize variance, reduce skewness
-
-![](../results/non_normalized_expr.png){.absolute top="150" left="0" width="550" height="550"} ![](../results/normalized_expr.png){.absolute top="150" left="600" width="550" height="550"}
+![](../results/non_normalized_expr.png){.absolute top="100" left="0" width="550" height="550"} ![](../results/normalized_expr.png){.absolute top="100" left="600" width="550" height="550"}
 
 ## Methods {.smaller}
 
@@ -79,7 +75,7 @@ Variance explained by the principal components
 :::
 :::
 
-![](../results/var_explained.png){.absolute top="100" left="500" width="600" height="550"}
+![](../results/var_explained.png){.absolute top="100" left="500" width="700" height="500"}
 
 ## Results - PCA {.smaller}
 
@@ -93,7 +89,7 @@ Scatter plot of projected observations onto PC1 and PC2
 :::
 :::
 
-![](../results/scatter_pc1_pc2.png){.absolute top="100" left="500" width="600" height="550"}
+![](../results/scatter_pc1_pc2.png){.absolute top="100" left="500" width="700" height="500"}
 
 ## Results - Linear Regression {.smaller}
 
@@ -105,7 +101,7 @@ Forest plot
 :::
 :::
 
-![](../results/forest_plot.png){.absolute top="100" left="500" width="600" height="550"}
+![](../results/forest_plot.png){.absolute top="100" left="500" width="600" height="600"}
 
 ## Results - Linear Regression {.smaller}
 
@@ -117,4 +113,4 @@ Volcano plot
 :::
 :::
 
-![](../results/volcano_plot.png){.absolute top="100" left="500" width="600" height="550"}
+![](../results/volcano_plot.png){.absolute top="100" left="500" width="600" height="600"}
