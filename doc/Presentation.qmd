@@ -59,25 +59,23 @@ Keep it clean and tidy:
 
 ## Methods {.smaller}
 
-Normalization -  minimize technical variability
+Normalization - minimize technical variability
 
 Log transformation - stabilize variance, reduce skewness
 
-
-
 Quantile Normalization:
 
-1.  Sort the the expression levels for each patient. 
-2.  Calculate the mean expression level of the genes within the same rank. 
-3.  Assign this mean to each gene within this rank. 
-4.  Rearranging the genes for each patient to obtain the original order. 
+1.  Sort the the expression levels for each patient.
+2.  Calculate the mean expression level of the genes within the same rank.
+3.  Assign this mean to each gene within this rank.
+4.  Rearranging the genes for each patient to obtain the original order.
 
 ## Methods {.smaller}
 
-![](../results/non_normalized_expr.png){.absolute top="100" left="0" width="550" height="550"} 
-![](../results/normalized_expr.png){.absolute top="100" left="600" width="550" height="550"}
+![](../results/non_normalized_expr.png){.absolute top="100" left="0" width="550" height="550"} ![](../results/normalized_expr.png){.absolute top="100" left="600" width="550" height="550"}
 
 ## Results - PCA {.smaller}
+
 ::: columns
 ::: {.column width="50%"}
 Variance explained by the principal components
@@ -85,26 +83,20 @@ Variance explained by the principal components
 -   First PC explains 15% of the variance
 
 -   31 PCs needed to explain 90% of variance
-
--   Difficult to compress 47.000 onto few PCs
-
 :::
 :::
 
 ![](../results/var_explained.png){.absolute top="100" left="500" width="600" height="550"}
 
 ## Results - PCA {.smaller}
+
 ::: columns
 ::: {.column width="50%"}
-
 Scatter plot of projected observations onto PC1 and PC2
 
 -   Slight division of disease state on PC1
 
 -   No clear division of gender
-
--   Need for further analysis of disease state
-
 :::
 :::
 
@@ -114,15 +106,14 @@ Scatter plot of projected observations onto PC1 and PC2
 
 ::: columns
 ::: {.column width="50%"}
-
 Forest plot
 
 -   Most significant genes are down regulated
-
 :::
 :::
 
 ![](../results/forest_plot.png){.absolute top="100" left="500" width="600" height="550"}
+
 
 ## Results - Linear Regression {.smaller}
 
@@ -133,6 +124,5 @@ Volcano plot
 -   None of the significant genes are among the Tuberculosis signature
 :::
 :::
-
 
 ![](../results/volcano_plot.png){.absolute top="100" left="500" width="600" height="550"}
