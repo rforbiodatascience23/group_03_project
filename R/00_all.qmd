@@ -78,3 +78,9 @@ file.rename(from = "06_analysis_2.html",
 {{< include 05_analysis_1.qmd >}}
 
 {{< include 06_analysis_2.qmd >}}
+
+```{r}
+file.rename(from = "00_all.html",
+            to = "../results/00_all.html")
+```
+
