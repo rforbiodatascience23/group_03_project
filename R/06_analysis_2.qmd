@@ -474,4 +474,3 @@ volcano_plot <- ggplot(data = dat_volcano_plot,
 
 ggsave("../results/volcano_plot.png",plot = volcano_plot)  
 ```
-

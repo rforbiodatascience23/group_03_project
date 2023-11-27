@@ -38,6 +38,8 @@ file.rename(from = "04_augment.html",
 ```
 
 ```{r}
+
+illuminatillumina 
 quarto_render(input = "05_analysis_1.qmd")
 file.rename(from = "05_analysis_1.html",
             to = "../results/05_analysis_1.html")
