@@ -35,8 +35,7 @@ Reference: (Dawany, N.)
 
 ::: columns
 ::: {.column width="50%"}
-Data flow:
-![](project_flow_chart.png){.absolute top="130" left="000" width="370" height="450"}
+Data flow: ![](project_flow_chart.png){.absolute top="130" left="000" width="370" height="450"}
 :::
 
 ::: {.column width="50%"}
@@ -49,10 +48,8 @@ Keep it clean and tidy:
 -   Handle key-variable
 
 -   Handle replications
-
 :::
 :::
-
 
 ## Methods {.smaller}
 
